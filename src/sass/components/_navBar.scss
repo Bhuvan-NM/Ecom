@@ -1,0 +1,102 @@
+.navBar {
+  background-color: $color-primary; //#FFFFFF
+  height: 5rem;
+
+  box-shadow: 0 0.5rem 3rem rgba($color: #000000, $alpha: 0.5);
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 1fr;
+  
+
+  padding: 0 6rem;
+  z-index: 1000;
+
+
+  transition: all 0.3s;
+
+  &.sticky {
+    position: fixed;
+    background-color: rgba($color-primary, 0.95);
+  }
+
+  &__gridPos-1 {
+    grid-area: 1/2/2/3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__gridPos-2 {
+    grid-area: 1/3/2/4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__gridPos-3 {
+    grid-area: 1/1/2/2;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
+
+  &__icon {
+    color: $color-secondary;
+    height: 2.5rem;
+    cursor: pointer;
+
+    &:hover {
+      height: 3rem;
+    }
+  }
+
+  &__icon:hover {
+    color: $color-secondary;
+  }
+
+  &__item {
+    margin-left: 2rem;
+  }
+}
+
+
+.searchBar {
+  align-items: center;
+  display: flex;
+  position: relative;
+
+  &__input {
+    background-color: rgba($color: $color-primary, $alpha: 0.5);
+    border: none;
+    border-radius: 2rem;
+    color: black;
+    font-size: 1.5rem;
+    padding: 0.5rem 2rem;
+    width: 35rem;
+
+    box-shadow: inset 0rem 0rem 0.5rem rgba($color: #000000, $alpha: 0.5);
+
+    &:focus {
+      outline: none;
+    }
+    &::placeholder {
+      color: rgba($color: #000000, $alpha: 0.5);
+      text-align: center;
+    }
+  }
+
+  &__icon {
+    position: absolute;
+    margin-left: -25rem;
+    width: 1.5rem;
+    color: black;
+    cursor: pointer;
+  }
+}
+
+.logo {
+  width: 5rem;
+  height: 5rem;
+  scale: 2;
+}

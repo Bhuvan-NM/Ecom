@@ -1,0 +1,129 @@
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html {
+  font-size: 62.5%;
+  scroll-behavior: smooth;
+}
+@media (max-width: 56.25em) {
+  html {
+    font-size: 50%;
+  }
+}
+@media (max-width: 75em) {
+  html {
+    font-size: 56.25%;
+  }
+}
+@media (min-width: 112.5em) {
+  html {
+    font-size: 75%;
+  }
+}
+
+body {
+  box-sizing: border-box;
+  padding: 2.5rem;
+}
+@media (max-width: 56.25em) {
+  body {
+    padding: 0;
+  }
+}
+
+.main {
+  background-color: #FBFAF8;
+  height: 100vh;
+  width: 100vw;
+}
+
+.navBar {
+  background-color: #ffffff;
+  height: 5rem;
+  box-shadow: 0 0.5rem 3rem rgba(0, 0, 0, 0.5);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 1fr;
+  padding: 0 6rem;
+  z-index: 1000;
+  transition: all 0.3s;
+}
+.navBar.sticky {
+  position: fixed;
+  background-color: rgba(255, 255, 255, 0.95);
+}
+.navBar__gridPos-1 {
+  grid-area: 1/2/2/3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.navBar__gridPos-2 {
+  grid-area: 1/3/2/4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.navBar__gridPos-3 {
+  grid-area: 1/1/2/2;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+.navBar__icon {
+  color: #00a7e1;
+  height: 2.5rem;
+  cursor: pointer;
+}
+.navBar__icon:hover {
+  height: 3rem;
+}
+.navBar__icon:hover {
+  color: #00a7e1;
+}
+.navBar__item {
+  margin-left: 2rem;
+}
+
+.searchBar {
+  align-items: center;
+  display: flex;
+  position: relative;
+}
+.searchBar__input {
+  background-color: rgba(255, 255, 255, 0.5);
+  border: none;
+  border-radius: 2rem;
+  color: black;
+  font-size: 1.5rem;
+  padding: 0.5rem 2rem;
+  width: 35rem;
+  box-shadow: inset 0rem 0rem 0.5rem rgba(0, 0, 0, 0.5);
+}
+.searchBar__input:focus {
+  outline: none;
+}
+.searchBar__input::placeholder {
+  color: rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+.searchBar__icon {
+  position: absolute;
+  margin-left: -25rem;
+  width: 1.5rem;
+  color: black;
+  cursor: pointer;
+}
+
+.logo {
+  width: 5rem;
+  height: 5rem;
+  scale: 2;
+}
+
+/*# sourceMappingURL=style.css.map */
