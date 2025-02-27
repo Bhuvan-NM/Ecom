@@ -90,6 +90,17 @@ body {
   margin-left: 2rem;
 }
 
+.login:active, .login__background {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 2rem;
+  color: white;
+  font-size: 1.5rem;
+  padding: 0.5rem 2rem;
+  width: 10rem;
+  text-align: center;
+  cursor: pointer;
+}
+
 .searchBar {
   align-items: center;
   display: flex;

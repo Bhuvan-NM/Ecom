@@ -1,14 +1,32 @@
-import Cart from 'assets/cart';
-import Logo from 'assets/logo';
-import Profile from 'assets/profile';
-import Search from 'assets/search';
+import Cart from 'assets/icons/cart';
+import Logo from 'assets/icons/logo';
+import Profile from 'assets/icons/profile';
+import Search from 'assets/icons/search';
 import React from 'react';
+import { useState } from 'react';
 
-const navBar = () => {
+const NavBar = () => {
+
+  const [showLogin, setShowLogin] = useState(false);
+
+  const handleLogin = () => {
+    setShowLogin(!showLogin);
+  };
+
+  const handleCloseLogin = (e: React.MouseEvent<HTMLDivElement>) => {
+
+    if (e.target === e.currentTarget) {
+      setShowLogin(false);
+    }
+  };
+
+
+
+
   return (
     <nav className='navBar'>
 
-      <div className="loginBackground">&nbsp;</div>
+      <div className="login__background" onClick={handleCloseLogin}>&nbsp;</div>
 
       <form className="searchBar navBar__gridPos-1">
         <input type='text' className='searchBar__input' placeholder='Search'></input>
@@ -19,8 +37,8 @@ const navBar = () => {
         <span className='navBar__item navBar__gridPos-2'>
           <Cart className={'navBar__icon'}/>
         </span>
-        <span className='navBar__item navBar__gridPos-2'>
-          <Profile className={'navBar__icon'}/>
+        <span className='navBar__item navBar__gridPos-2' onClick = {handleLogin}>
+          <Profile className={'navBar__icon login'} />
         </span>
       </div>
         
@@ -32,4 +50,4 @@ const navBar = () => {
   );
 };
 
-export default navBar;
+export default NavBar;
