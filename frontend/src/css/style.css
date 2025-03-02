@@ -10,7 +10,6 @@
 
 html {
   font-size: 62.5%;
-  scroll-behavior: smooth;
 }
 @media (max-width: 56.25em) {
   html {
@@ -230,8 +229,8 @@ body {
   border-bottom: 3px solid orange;
 }
 .auth__inputGroup__label {
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 400;
   margin-left: 2rem;
   margin-top: 0.7rem;
   display: block;

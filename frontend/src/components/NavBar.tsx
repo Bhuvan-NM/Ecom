@@ -26,9 +26,6 @@ const NavBar = () => {
     }, 0);
   }, [isLoginVisible]);
 
-  // ✅ Prevent click propagation inside the modal
-  
-
   return (
     <nav className="navBar">
       {/* Radial Background (Framer Motion) */}

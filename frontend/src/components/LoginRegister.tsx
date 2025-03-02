@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion"; 
+import axios from "axios";
 import XMark from "assets/icons/XMark";
 import Logo from "assets/icons/logo";
 
@@ -47,10 +47,39 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
     event.stopPropagation();
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  
+    try {
+      if (isRegister) {
+        // REGISTER API CALL
+        const response = await axios.post("http://localhost:1337/auth/register", formData, {
+          withCredentials: true, // ✅ IMPORTANT: Allows CORS to handle cookies/tokens
+        });
+        alert(response.data.message);
+      } else {
+        // LOGIN API CALL
+        const response = await axios.post("http://localhost:1337/auth/login", {
+          email: formData.email,
+          password: formData.password,
+        }, {
+          withCredentials: true, // ✅ IMPORTANT
+        });
+  
+        // Store authentication token
+        localStorage.setItem("authToken", response.data.token);
+        alert("Login successful!");
+      }
+  
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Something went wrong!");
+    }
+  };
+
   return (
     <div className="auth__container">
-      <form action="#" className="form">
-        <motion.div className="auth__form" onClick={stopPropagation}>
+      <form onSubmit={handleSubmit} className="form">
+        <div className="auth__form" onClick={stopPropagation}>
           <div className="auth__form__container">
             <span className="auth__close" onClick={handleClose}>
               <XMark className="auth__close__btn" />
@@ -63,7 +92,7 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
             <h2 className="auth__title">{isRegister ? "Create Account" : "Login"}</h2>
 
             <div className="auth__inputGroup">
-              {isRegister ? (
+              {isRegister && (
                 <>
                   <input
                     type="text"
@@ -99,7 +128,7 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
                   />
                   <label htmlFor="phoneNumber" className="auth__inputGroup__label">Phone Number</label>
                 </>
-              ) : null}
+              )}
 
               <input
                 type="email"
@@ -125,7 +154,7 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
               <label htmlFor="password" className="auth__inputGroup__label">Password</label>
             </div>
 
-            <button className="auth__btn">
+            <button type="submit" className="auth__btn">
               {isRegister ? "Sign Up" : "Login"}
             </button>
 
@@ -134,9 +163,8 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
               <span>{isRegister ? "Login" : "Create Account"}</span>
             </p>
           </div>
-        </motion.div>
+        </div>
       </form>
-      
     </div>
   );
 };
