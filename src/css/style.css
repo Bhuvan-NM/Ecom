@@ -1,3 +1,5 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&display=swap");
 *,
 *::after,
 *::before {
@@ -28,12 +30,19 @@ html {
 
 body {
   box-sizing: border-box;
-  padding: 2.5rem;
+  padding-top: 2.5rem;
 }
 @media (max-width: 56.25em) {
   body {
     padding: 0;
   }
+}
+
+body {
+  font-family: "Oswald", sans-serif;
+  font-weight: 400;
+  /*font-size: 16rem;*/
+  line-height: 1.7;
 }
 
 .main {
@@ -45,12 +54,14 @@ body {
 .navBar {
   background-color: #ffffff;
   height: 5rem;
+  position: fixed;
+  width: 100%;
   box-shadow: 0 0.5rem 3rem rgba(0, 0, 0, 0.5);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: 1fr;
   padding: 0 6rem;
-  z-index: 1000;
+  z-index: 1100;
   transition: all 0.3s;
 }
 .navBar.sticky {
@@ -90,17 +101,6 @@ body {
   margin-left: 2rem;
 }
 
-.login:active, .login__background {
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 2rem;
-  color: white;
-  font-size: 1.5rem;
-  padding: 0.5rem 2rem;
-  width: 10rem;
-  text-align: center;
-  cursor: pointer;
-}
-
 .searchBar {
   align-items: center;
   display: flex;
@@ -135,6 +135,119 @@ body {
   width: 5rem;
   height: 5rem;
   scale: 2;
+}
+
+.login__background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 52, 89, 0.2); /* Dark transparent overlay */
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.auth__form {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center; /* ✅ Centers vertically */
+  justify-content: center; /* ✅ Centers horizontally */
+}
+.auth__form__container {
+  display: grid;
+  width: 50rem;
+  height: 70vh;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 1rem;
+  transition: all 0.5s;
+}
+.auth__close {
+  grid-area: 1/3/2/4;
+  justify-self: end;
+  align-self: end;
+}
+.auth__close__btn {
+  height: 4rem;
+  color: #00a7e1;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.auth__close__btn:hover {
+  color: red;
+  height: 4.5rem;
+}
+.auth__logo {
+  grid-area: 2/2/3/3;
+  justify-self: center;
+  align-self: center;
+  width: 10rem;
+  height: 10rem;
+  scale: 1.5;
+}
+.auth__title {
+  grid-area: 3/1/4/4;
+  justify-self: center;
+  align-self: center;
+  font-size: 5rem;
+  font-weight: 500;
+  color: #ffffff;
+}
+.auth__inputGroup {
+  grid-area: 4/1/5/4;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.auth__inputGroup__field {
+  width: 100%;
+  height: 5rem;
+  padding: 1rem;
+  border: none;
+  border-radius: 1rem;
+  background-color: rgba(0, 52, 89, 0.2);
+  font-size: 2rem;
+  font-weight: 400;
+  color: #ffffff;
+}
+.auth__inputGroup__field:active {
+  border: none;
+  border-bottom: 3px, solid, greenyellow;
+}
+.auth__btn {
+  grid-area: 5/1/6/4;
+  justify-self: center;
+  align-self: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  width: 100%;
+  height: 7rem;
+  border: none;
+  border-radius: 10rem;
+  background-color: #00a7e1;
+  font-size: 4rem;
+  font-weight: 400;
+}
+.auth__btn:hover {
+  scale: 1.1;
+}
+.auth__btn:active {
+  scale: 1;
+}
+.auth__toggle {
+  grid-area: 6/1/7/4;
+  justify-self: center;
+  align-self: center;
+  font-size: 2rem;
+  cursor: pointer;
 }
 
 /*# sourceMappingURL=style.css.map */

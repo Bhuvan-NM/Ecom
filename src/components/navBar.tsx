@@ -3,49 +3,57 @@ import Logo from 'assets/icons/logo';
 import Profile from 'assets/icons/profile';
 import Search from 'assets/icons/search';
 import React from 'react';
-import { useState } from 'react';
+import {motion} from 'framer-motion';
+import { useState, useRef, useEffect } from 'react';
+import LoginRegister from './LoginRegister';
 
 const NavBar = () => {
   const [isLoginVisible, setIsLoginVisible] = useState(false);
+  const profileRef = useRef<HTMLSpanElement | null>(null);
+  const [profilePosition, setProfilePosition] = useState({ x: 0, y: 0 });
 
-  const toggleLoginBackground = () => {
-    setIsLoginVisible(!isLoginVisible);
-  };
+  useEffect(() => {
+    if (!isLoginVisible || !profileRef.current) return; // ✅ Prevents running when modal is closing
+  
+    const rect = profileRef.current.getBoundingClientRect();
+  
+    setTimeout(() => {
+      if (!isLoginVisible) return; // ✅ Ensures state doesn't update after unmounting
+      setProfilePosition({
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+      });
+    }, 0);
+  }, [isLoginVisible]);
 
-  const closeLoginModal = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.target === event.currentTarget) {
-      setIsLoginVisible(false);
-    }
-  };
+  // ✅ Prevent click propagation inside the modal
+  
 
   return (
     <nav className="navBar">
-      {/* Login Background (Modal) */}
+      {/* Radial Background (Framer Motion) */}
       {isLoginVisible && (
-        <div 
-          className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center"
-          onClick={closeLoginModal}
-        >
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-bold mb-4">Login</h2>
-            <p>Enter your credentials here.</p>
-            <button 
-              className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
-              onClick={() => setIsLoginVisible(false)}
-            >
-              Close
-            </button>
-          </div>
-        </div>
+        <motion.div
+        className="login__background"
+        initial={{
+          clipPath: `circle(0px at ${profilePosition.x}px ${profilePosition.y}px)`,
+        }}
+        animate={{
+          clipPath: `circle(150% at ${profilePosition.x}px ${profilePosition.y}px)`,
+        }}
+        exit={{
+          clipPath: `circle(0px at ${profilePosition.x}px ${profilePosition.y}px)`,
+        }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        onClick={() => setIsLoginVisible(false)} // ✅ Closes only when clicking outside
+      >
+        <LoginRegister setIsLoginVisible={setIsLoginVisible} />
+        </motion.div>
       )}
 
       {/* Search Bar */}
       <form className="searchBar navBar__gridPos-1">
-        <input 
-          type="text" 
-          className="searchBar__input" 
-          placeholder="Search"
-        />
+        <input type="text" className="searchBar__input" placeholder="Search" />
         <Search className="searchBar__icon" />
       </form>
 
@@ -54,10 +62,10 @@ const NavBar = () => {
         <span className="navBar__item navBar__gridPos-2">
           <Cart className="navBar__icon" />
         </span>
-        {/* Move onClick to <span> instead of <Profile /> */}
-        <span 
-          className="navBar__item navBar__gridPos-2 cursor-pointer" 
-          onClick={toggleLoginBackground}
+        <span
+          ref={profileRef}
+          className="navBar__item navBar__gridPos-2 cursor-pointer"
+          onClick={() => setIsLoginVisible(true)}
         >
           <Profile className="navBar__icon login" />
         </span>
