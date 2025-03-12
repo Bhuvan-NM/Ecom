@@ -1,15 +1,24 @@
-import React from 'react';
+import React from "react";
 import "./css/style.css";
-import NavBar from 'components/NavBar';
-
-
+import NavBar from "components/NavBar";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "pages/Home";
+import Account from "pages/Account";
+import { AuthProvider } from "components/AuthContext";
 
 function App() {
-    return (
-        <div className="main">
-            <NavBar />
-        </div>
-    );
+  return (
+    <>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />}></Route>
+            <Route path="/account" element={<Account />}></Route>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </>
+  );
 }
 
 export default App;

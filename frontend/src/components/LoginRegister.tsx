@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
+import { AuthContext } from "./AuthContext"; // Import AuthContext
 import XMark from "assets/icons/XMark";
 import Logo from "assets/icons/logo";
 
@@ -7,19 +8,20 @@ interface LoginRegisterProps {
   setIsLoginVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-// Define the structure of the form data
 interface FormData {
-  firstName?: string;
-  lastName?: string;
-  phoneNumber?: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
   email: string;
   password: string;
 }
 
 const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
+  const { login } = useContext(AuthContext)!; // Access global login function
   const [isRegister, setIsRegister] = useState(false);
+  const [isUIReady, setIsUIReady] = useState(false); // Delay UI updates
 
-  // Initialize form state with TypeScript type checking
+  // Initialize form state
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -28,13 +30,16 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
     password: "",
   });
 
-  // Handle form field changes with type safety
+  useEffect(() => {
+    // ✅ Delay UI changes after login to prevent DOM errors
+    setTimeout(() => {
+      setIsUIReady(true);
+    }, 100); // Small delay to ensure React updates the DOM
+  }, []);
+
+  // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }));
+    setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
   const handleClose = () => {
@@ -47,30 +52,49 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
     event.stopPropagation();
   };
 
+  // ✅ Handle Registration and Login
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
+
     try {
       if (isRegister) {
-        // REGISTER API CALL
-        const response = await axios.post("http://localhost:1337/auth/register", formData, {
-          withCredentials: true, // ✅ IMPORTANT: Allows CORS to handle cookies/tokens
-        });
-        alert(response.data.message);
+        // 🚀 REGISTER API CALL
+        const response = await axios.post(
+          "http://localhost:1337/auth/register",
+          formData,
+          {
+            withCredentials: true, // Enable cookies/auth token sharing
+          }
+        );
+
+        alert("Registration successful! Please login.");
       } else {
-        // LOGIN API CALL
-        const response = await axios.post("http://localhost:1337/auth/login", {
-          email: formData.email,
-          password: formData.password,
-        }, {
-          withCredentials: true, // ✅ IMPORTANT
-        });
-  
-        // Store authentication token
-        localStorage.setItem("authToken", response.data.token);
-        alert("Login successful!");
+        // 🚀 LOGIN API CALL
+        const response = await axios.post(
+          "http://localhost:1337/auth/login",
+          {
+            email: formData.email,
+            password: formData.password,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+
+        // Extract user data
+        const { token, user } = response.data;
+
+        // ✅ Update Auth Context (global state)
+        login(user, token);
+
+        // ✅ Delay updating UI after login
+        setTimeout(() => {
+          login(user, token);
+          setIsLoginVisible(false);
+        }, 100); // Small delay to prevent insertion errors
+
+        setIsLoginVisible(false);
       }
-  
     } catch (error: any) {
       alert(error.response?.data?.message || "Something went wrong!");
     }
@@ -89,7 +113,9 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
               <Logo className="auth__logo" />
             </span>
 
-            <h2 className="auth__title">{isRegister ? "Create Account" : "Login"}</h2>
+            <h2 className="auth__title">
+              {isRegister ? "Create Account" : "Login"}
+            </h2>
 
             <div className="auth__inputGroup">
               {isRegister && (
@@ -103,7 +129,12 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
                     onChange={handleChange}
                     required
                   />
-                  <label htmlFor="firstName" className="auth__inputGroup__label">First Name</label>
+                  <label
+                    htmlFor="firstName"
+                    className="auth__inputGroup__label"
+                  >
+                    First Name
+                  </label>
 
                   <input
                     type="text"
@@ -114,7 +145,9 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
                     onChange={handleChange}
                     required
                   />
-                  <label htmlFor="lastName" className="auth__inputGroup__label">Last Name</label>
+                  <label htmlFor="lastName" className="auth__inputGroup__label">
+                    Last Name
+                  </label>
 
                   <input
                     type="tel"
@@ -126,7 +159,12 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
                     pattern="[0-9]{10}"
                     required
                   />
-                  <label htmlFor="phoneNumber" className="auth__inputGroup__label">Phone Number</label>
+                  <label
+                    htmlFor="phoneNumber"
+                    className="auth__inputGroup__label"
+                  >
+                    Phone Number
+                  </label>
                 </>
               )}
 
@@ -139,7 +177,9 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
                 onChange={handleChange}
                 required
               />
-              <label htmlFor="email" className="auth__inputGroup__label">Email Address</label>
+              <label htmlFor="email" className="auth__inputGroup__label">
+                Email Address
+              </label>
 
               <input
                 type="password"
@@ -151,15 +191,22 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
                 minLength={6}
                 required
               />
-              <label htmlFor="password" className="auth__inputGroup__label">Password</label>
+              <label htmlFor="password" className="auth__inputGroup__label">
+                Password
+              </label>
             </div>
 
             <button type="submit" className="auth__btn">
               {isRegister ? "Sign Up" : "Login"}
             </button>
 
-            <p className="auth__toggle" onClick={() => setIsRegister(!isRegister)}>
-              {isRegister ? "Already have an account?" : "Don't have an account?"}{" "}
+            <p
+              className="auth__toggle"
+              onClick={() => setIsRegister(!isRegister)}
+            >
+              {isRegister
+                ? "Already have an account?"
+                : "Don't have an account?"}{" "}
               <span>{isRegister ? "Login" : "Create Account"}</span>
             </p>
           </div>
