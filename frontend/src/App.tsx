@@ -1,10 +1,9 @@
 import React from "react";
 import "./css/style.css";
-import NavBar from "components/NavBar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "pages/Home";
-import Account from "pages/Account";
-import { AuthProvider } from "components/AuthContext";
+import Home from "./pages/Home";
+import Account from "./pages/Account";
+import { AuthProvider } from "./components/AuthContext";
 
 function App() {
   return (
@@ -12,8 +11,14 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Home />}></Route>
-            <Route path="/account" element={<Account />}></Route>
+            <Route
+              path="/"
+              element={<Home />}
+            ></Route>
+            <Route
+              path="/account"
+              element={<Account />}
+            ></Route>
           </Routes>
         </BrowserRouter>
       </AuthProvider>

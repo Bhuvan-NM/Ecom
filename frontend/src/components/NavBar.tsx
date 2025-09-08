@@ -1,7 +1,7 @@
-import Cart from "assets/icons/cart";
-import Logo from "assets/icons/logo";
-import Profile from "assets/icons/profile";
-import Search from "assets/icons/search";
+import Cart from "../assets/icons/cart";
+import Logo from "../assets/icons/logo";
+import Profile from "../assets/icons/profile";
+import Search from "../assets/icons/search";
 import { motion } from "framer-motion";
 import { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
@@ -61,7 +61,11 @@ const NavBar = () => {
 
       {/* Search Bar */}
       <form className="searchBar navBar__gridPos-1">
-        <input type="text" className="searchBar__input" placeholder="Search" />
+        <input
+          type="text"
+          className="searchBar__input"
+          placeholder="Search"
+        />
         <Search className="searchBar__icon" />
       </form>
 
@@ -80,7 +84,10 @@ const NavBar = () => {
       </div>
 
       {/* Logo */}
-      <div className="navBar__gridPos-3" onClick={() => navigate("/")}>
+      <div
+        className="navBar__gridPos-3"
+        onClick={() => navigate("/")}
+      >
         <Logo className="logo" />
       </div>
     </nav>

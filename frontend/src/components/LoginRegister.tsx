@@ -1,8 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { AuthContext } from "./AuthContext"; // Import AuthContext
-import XMark from "assets/icons/XMark";
-import Logo from "assets/icons/logo";
+import XMark from "../assets/icons/XMark";
+import Logo from "../assets/icons/logo";
 
 interface LoginRegisterProps {
   setIsLoginVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -102,10 +102,19 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
 
   return (
     <div className="auth__container">
-      <form onSubmit={handleSubmit} className="form">
-        <div className="auth__form" onClick={stopPropagation}>
+      <form
+        onSubmit={handleSubmit}
+        className="form"
+      >
+        <div
+          className="auth__form"
+          onClick={stopPropagation}
+        >
           <div className="auth__form__container">
-            <span className="auth__close" onClick={handleClose}>
+            <span
+              className="auth__close"
+              onClick={handleClose}
+            >
               <XMark className="auth__close__btn" />
             </span>
 
@@ -145,7 +154,10 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
                     onChange={handleChange}
                     required
                   />
-                  <label htmlFor="lastName" className="auth__inputGroup__label">
+                  <label
+                    htmlFor="lastName"
+                    className="auth__inputGroup__label"
+                  >
                     Last Name
                   </label>
 
@@ -177,7 +189,10 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
                 onChange={handleChange}
                 required
               />
-              <label htmlFor="email" className="auth__inputGroup__label">
+              <label
+                htmlFor="email"
+                className="auth__inputGroup__label"
+              >
                 Email Address
               </label>
 
@@ -191,12 +206,18 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
                 minLength={6}
                 required
               />
-              <label htmlFor="password" className="auth__inputGroup__label">
+              <label
+                htmlFor="password"
+                className="auth__inputGroup__label"
+              >
                 Password
               </label>
             </div>
 
-            <button type="submit" className="auth__btn">
+            <button
+              type="submit"
+              className="auth__btn"
+            >
               {isRegister ? "Sign Up" : "Login"}
             </button>
 

@@ -1,11 +1,11 @@
 import React, { useState, useContext } from "react";
-import NavBar from "components/NavBar";
-import { AuthContext } from "components/AuthContext";
+import NavBar from "../components/NavBar";
+import { AuthContext } from "../components/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Edit from "assets/icons/Edit";
-import ProfileImageSolid from "assets/icons/ProfileImageSolid";
-import Tick from "assets/icons/Tick";
+import Edit from "../assets/icons/Edit";
+import ProfileImageSolid from "../assets/icons/ProfileImageSolid";
+import Tick from "../assets/icons/Tick";
 
 const Account = () => {
   const { user, logout, login } = useContext(AuthContext)!;
@@ -19,6 +19,7 @@ const Account = () => {
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
     email: user?.email || "",
+    password: "",
   });
 
   // Handle input change
@@ -181,7 +182,7 @@ const Account = () => {
                     id="password"
                     className="profile-input input-password"
                     placeholder="Enter New Password"
-                    value={"****************"}
+                    value={formData.password}
                     onChange={handleChange}
                     required
                   />
