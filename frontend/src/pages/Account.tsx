@@ -45,19 +45,31 @@ const Account = () => {
 
     if (!emailRegex.test(formData.email)) {
       alert("Please enter a valid email address.");
-      return; // ❌ Stops execution if email is invalid
+      return;
     }
 
     try {
+      // ✅ Only include non-empty password
+      const payload: any = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+      };
+
+      if (formData.password.trim() !== "") {
+        payload.password = formData.password;
+      }
+
       const response = await axios.put(
         "http://localhost:1337/auth/update",
-        formData,
-        { withCredentials: true } // ✅ Cookie-based authentication
+        payload,
+        { withCredentials: true }
       );
 
-      // ✅ Update global state with new user data
+      // ✅ Update user context
       login(response.data.user, response.data.token);
       setIsEditing(false);
+      setFormData({ ...formData, password: "" }); // clear password field
     } catch (error: any) {
       alert(error.response?.data?.message || "Failed to update profile.");
     }
@@ -100,49 +112,51 @@ const Account = () => {
           <span className="profile-image">
             <ProfileImageSolid className="profile-image" />
           </span>
+          <p className="profile-name">
+            {isEditing && cardId === "Profile" ? (
+              <>
+                <div className="profile-input-name-container">
+                  <div className="profile-input-Wrapper">
+                    <input
+                      type="text"
+                      name="firstName"
+                      className="profile-input"
+                      placeholder="First Name"
+                      id="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                    />
+                    <label
+                      htmlFor="firstName"
+                      className="profile-input-label"
+                    >
+                      First Name
+                    </label>
+                  </div>
+                  <div className="profile-input-Wrapper">
+                    <input
+                      type="text"
+                      name="lastName"
+                      id="lastName"
+                      className="profile-input"
+                      placeholder="Last Name"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                    />
+                    <label
+                      htmlFor="lastName"
+                      className="profile-input-label"
+                    >
+                      Last Name
+                    </label>
+                  </div>
+                </div>
+              </>
+            ) : (
+              `${user?.firstName} ${user?.lastName}`
+            )}
+          </p>
 
-          {isEditing && cardId === "Profile" ? (
-            <>
-              <div className="profile-input-name-container">
-                <div className="profile-input-Wrapper">
-                  <input
-                    type="text"
-                    name="firstName"
-                    className="profile-input"
-                    placeholder="First Name"
-                    id="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                  />
-                  <label
-                    htmlFor="firstName"
-                    className="profile-input-label"
-                  >
-                    First Name
-                  </label>
-                </div>
-                <div className="profile-input-Wrapper">
-                  <input
-                    type="text"
-                    name="lastName"
-                    id="lastName"
-                    className="profile-input"
-                    placeholder="Last Name"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                  />
-                  <label
-                    htmlFor="lastName"
-                    className="profile-input-label"
-                  >
-                    Last Name
-                  </label>
-                </div>
-              </div>
-            </>
-          ) : (
-            `${user?.firstName} ${user?.lastName}`
-          )}
           <p className="profile-email">
             {isEditing && cardId === "Profile" ? (
               <>
@@ -195,7 +209,7 @@ const Account = () => {
                 </div>
               </>
             ) : (
-              `Email: ${user?.email}`
+              `Password: ********`
             )}
           </p>
 

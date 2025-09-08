@@ -89,15 +89,24 @@ router.post("/login", async (req, res) => {
 
 router.put("/update", authMiddleware, async (req, res) => {
   try {
-    const userId = req.user.id; // Extracted from authMiddleware
-    const { firstName, lastName, phoneNumber, email } = req.body;
+    const userId = req.user.id;
+    const { firstName, lastName, phoneNumber, email, password } = req.body;
 
-    // Find and update user
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { firstName, lastName, phoneNumber, email },
-      { new: true } // Return the updated document
-    );
+    const updateFields = {
+      firstName,
+      lastName,
+      phoneNumber,
+      email,
+    };
+
+    if (password && password.trim() !== "") {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateFields.password = hashedPassword;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updateFields, {
+      new: true,
+    });
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
@@ -105,7 +114,13 @@ router.put("/update", authMiddleware, async (req, res) => {
 
     res.json({
       message: "Profile updated successfully",
-      user: updatedUser,
+      user: {
+        id: updatedUser._id,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        email: updatedUser.email,
+        phoneNumber: updatedUser.phoneNumber,
+      },
     });
   } catch (error) {
     console.error("Error updating profile:", error);
