@@ -50,6 +50,24 @@ body {
   width: 100vw;
 }
 
+.account__admin-link {
+  margin: 2rem auto 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  border-radius: 999px;
+  border: none;
+  background-color: #00a7e1;
+  color: #ffffff;
+  font-size: 1.6rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.account__admin-link:hover {
+  background-color: #003459;
+}
 .account_container {
   display: grid;
   justify-content: center;
@@ -222,6 +240,41 @@ body {
 
 .invalid-border {
   border: 2px solid red;
+}
+
+.adminPortalContainer {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+}
+
+.adminPortalHeading {
+  grid-area: 1/1/2/6;
+  display: flex;
+  justify-content: center;
+}
+
+.adminPortalSidebar {
+  grid-area: 2/1/6/2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+.adminPortalSidebarList {
+  list-style: none;
+  padding-left: 4rem;
+  width: 70%;
+  height: 100%;
+  text-align: left;
+  font-size: 3rem;
+  border-right: 1rem solid #00a7e1;
+}
+
+.adminPortalMain {
+  grid-area: 2/2/6/6;
 }
 
 .navBar {

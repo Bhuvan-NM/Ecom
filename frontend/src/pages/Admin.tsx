@@ -36,12 +36,23 @@ const Admin: React.FC = () => {
     <div className="admin-portal">
       <NavBar />
       <main className="admin-portal__content">
-        <h1>Admin Portal</h1>
-        <p>{statusMessage}</p>
-        <p>
-          Use this space to build out dashboards, inventory managers, and other
-          tools only administrators should access.
-        </p>
+        <div className="adminPortalContainer">
+          <h1 className="adminPortalHeading">Admin Portal</h1>
+          <div className="adminPortalSidebar">
+            <ul className="adminPortalSidebarList">
+              <li className="adminPortalSidebarItem active">Dashboard</li>
+              <li className="adminPortalSidebarItem">Inventory</li>
+              <li className="adminPortalSidebarItem">Orders</li>
+              <li className="adminPortalSidebarItem">Users</li>
+              <li className="adminPortalSidebarItem">Settings</li>
+            </ul>
+          </div>
+          <div className="adminPortalMain">
+            <h2 className="adminPortalSubheading">Dashboard</h2>
+            <p className="adminPortalStatusMessage">{statusMessage}</p>
+            {/* Additional admin dashboard content can go here */}
+          </div>
+        </div>
       </main>
     </div>
   );
