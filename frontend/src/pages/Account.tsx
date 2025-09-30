@@ -20,6 +20,7 @@ const Account = () => {
     lastName: user?.lastName || "",
     email: user?.email || "",
     password: "",
+    phoneNumber: user?.phoneNumber || "",
   });
 
   // Handle input change
@@ -54,6 +55,7 @@ const Account = () => {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
+        phoneNumber: formData.phoneNumber,
       };
 
       if (formData.password.trim() !== "") {
@@ -84,6 +86,15 @@ const Account = () => {
   return (
     <div className="account_main">
       <NavBar />
+
+      {user?.isAdmin && (
+        <button
+          className="account__admin-link"
+          onClick={() => navigate("/admin")}
+        >
+          Go to Admin Portal
+        </button>
+      )}
 
       <div className="account_container">
         <div className="account_card-profile">
@@ -230,7 +241,9 @@ const Account = () => {
               onChange={handleChange}
             />
           ) : (
-            <p>{}</p>
+            <p className="account_card-contactInfo-PhoneNumber">
+              Phone Number: {user?.phoneNumber}
+            </p>
           )}
         </div>
 

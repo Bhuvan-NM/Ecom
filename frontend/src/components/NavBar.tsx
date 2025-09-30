@@ -74,6 +74,14 @@ const NavBar = () => {
         <span className="navBar__item navBar__gridPos-2">
           <Cart className="navBar__icon" />
         </span>
+        {user?.isAdmin && (
+          <span
+            className="navBar__item navBar__gridPos-2 cursor-pointer"
+            onClick={() => navigate("/admin")}
+          >
+            Admin
+          </span>
+        )}
         <span
           ref={profileRef}
           className="navBar__item navBar__gridPos-2 cursor-pointer"
