@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import NavBar from "../components/NavBar";
+import Dashboard from "../subPages/adminPages/Dashboard";
+import Inventory from "../subPages/adminPages/Inventory";
+import Orders from "../subPages/adminPages/Orders";
+import Users from "../subPages/adminPages/Users";
+import Settings from "../subPages/adminPages/Settings";
 
 const Admin: React.FC = () => {
   const [statusMessage, setStatusMessage] = useState("Loading admin tools...");
+  const [activeSection, setActiveSection] = useState("Dashboard"); // NEW
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -32,6 +38,24 @@ const Admin: React.FC = () => {
     fetchAdminStatus();
   }, []);
 
+  // Function to render content based on activeSection
+  const renderContent = () => {
+    switch (activeSection) {
+      case "Dashboard":
+        return <Dashboard />;
+      case "Inventory":
+        return <Inventory />;
+      case "Orders":
+        return <Orders />;
+      case "Users":
+        return <Users />;
+      case "Settings":
+        return <Settings />;
+      default:
+        return <p>Select a section from the sidebar.</p>;
+    }
+  };
+
   return (
     <div className="admin-portal">
       <NavBar />
@@ -40,18 +64,21 @@ const Admin: React.FC = () => {
           <h1 className="adminPortalHeading">Admin Portal</h1>
           <div className="adminPortalSidebar">
             <ul className="adminPortalSidebarList">
-              <li className="adminPortalSidebarItem active">Dashboard</li>
-              <li className="adminPortalSidebarItem">Inventory</li>
-              <li className="adminPortalSidebarItem">Orders</li>
-              <li className="adminPortalSidebarItem">Users</li>
-              <li className="adminPortalSidebarItem">Settings</li>
+              {["Dashboard", "Inventory", "Orders", "Users", "Settings"].map(
+                (item) => (
+                  <li
+                    key={item}
+                    className={`adminPortalSidebarItem adminPortalSidebarItem--${item.toLowerCase()}`}
+                    onClick={() => setActiveSection(item)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {item}
+                  </li>
+                )
+              )}
             </ul>
           </div>
-          <div className="adminPortalMain">
-            <h2 className="adminPortalSubheading">Dashboard</h2>
-            <p className="adminPortalStatusMessage">{statusMessage}</p>
-            {/* Additional admin dashboard content can go here */}
-          </div>
+          <div className="adminPortalMain">{renderContent()}</div>
         </div>
       </main>
     </div>
