@@ -68,7 +68,9 @@ const Admin: React.FC = () => {
                 (item) => (
                   <li
                     key={item}
-                    className={`adminPortalSidebarItem adminPortalSidebarItem--${item.toLowerCase()}`}
+                    className={`adminPortalSidebarItem adminPortalSidebarItem--${item.toLowerCase()} ${
+                      activeSection === item ? "active" : ""
+                    }`}
                     onClick={() => setActiveSection(item)}
                     style={{ cursor: "pointer" }}
                   >

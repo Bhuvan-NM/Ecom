@@ -1,35 +1,78 @@
 .adminPortalContainer {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(5, 1fr);
-  grid-column-gap: 0px;
-  grid-row-gap: 0px;
+  top: var(navbar-height);
+  grid-template-columns: 250px 1fr; // fixed sidebar width + flexible content
+  grid-template-rows: auto 1fr;
+  height: 100vh; // full height of viewport
 }
-.adminPortalHeading {
-  grid-area: 1 / 1 / 2 / 6;
 
+.adminPortalHeading {
+  grid-area: 1 / 1 / 2 / 3;
   display: flex;
   justify-content: center;
+  position: fixed;
+  top: $navbar-height;
+  left: 0;
+  right: 0;
+  background-color: $color-secondary;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  padding: 1rem 0;
+  z-index: 1000;
 }
+
 .adminPortalSidebar {
-  grid-area: 2 / 1 / 6 / 2;
+  position: fixed; // changed from sticky to fixed for floating effect
+  left: 3rem;
+  top: $navbar-height + 7rem; // below navbar and heading
+  width: 250px; // fixed width for sidebar
+  background-color: $color-primary; // added background color
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3); // added box shadow
+  padding: 2rem; // added padding for floating effect
+  overflow-y: auto; // scroll inside sidebar if too tall
+
+  border-radius: 3rem;
 
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-start;
 
   &List {
     list-style: none;
-    padding-left: 4rem;
-
-    width: 70%;
-    height: 100%;
-    text-align: left;
-    font-size: 3rem;
-    border-right: 1rem solid $color-secondary;
+    padding-left: 2rem;
+    width: 100%;
+    font-size: 2rem;
   }
 }
+
+.adminPortalSidebarItem {
+  padding: 1rem 0;
+  width: 100%;
+  transition: all 0.2s ease;
+
+  &.active {
+    border-right: 5px solid $color-secondary; // your blue color variable
+    font-weight: bold;
+    color: $color-secondary;
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05); // optional hover effect
+  }
+}
+
 .adminPortalMain {
-  grid-area: 2 / 2 / 6 / 6;
+  grid-area: 2 / 2 / 3 / 3;
+  overflow-y: auto; // makes only content scroll
+  padding: 2rem;
+  margin-left: 250px; // added margin to avoid overlap with floating sidebar
+  margin-top: 80px; // added margin to avoid overlap with fixed heading
+}
+
+.dashboard {
+  &-graphContainer {
+    font-size: 2rem;
+    color: $color-secondary;
+    width: 70%;
+  }
 }

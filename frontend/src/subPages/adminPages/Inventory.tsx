@@ -1,7 +1,11 @@
 import React from "react";
 
 const Inventory = () => {
-  return <div></div>;
+  return (
+    <div>
+      <h2 className="Inventory-Heading">Inventory</h2>
+    </div>
+  );
 };
 
 export default Inventory;

@@ -244,45 +244,84 @@ body {
 
 .adminPortalContainer {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(5, 1fr);
-  grid-column-gap: 0px;
-  grid-row-gap: 0px;
+  top: var(navbar-height);
+  grid-template-columns: 250px 1fr;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
 }
 
 .adminPortalHeading {
-  grid-area: 1/1/2/6;
+  grid-area: 1/1/2/3;
   display: flex;
   justify-content: center;
+  position: fixed;
+  top: 7rem;
+  left: 0;
+  right: 0;
+  background-color: #00a7e1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  padding: 1rem 0;
+  z-index: 1000;
 }
 
 .adminPortalSidebar {
-  grid-area: 2/1/6/2;
+  position: fixed;
+  left: 3rem;
+  top: 14rem;
+  width: 250px;
+  background-color: #ffffff;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+  padding: 2rem;
+  overflow-y: auto;
+  border-radius: 3rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-start;
 }
 .adminPortalSidebarList {
   list-style: none;
-  padding-left: 4rem;
-  width: 70%;
-  height: 100%;
-  text-align: left;
-  font-size: 3rem;
-  border-right: 1rem solid #00a7e1;
+  padding-left: 2rem;
+  width: 100%;
+  font-size: 2rem;
+}
+
+.adminPortalSidebarItem {
+  padding: 1rem 0;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+.adminPortalSidebarItem.active {
+  border-right: 5px solid #00a7e1;
+  font-weight: bold;
+  color: #00a7e1;
+}
+.adminPortalSidebarItem:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .adminPortalMain {
-  grid-area: 2/2/6/6;
+  grid-area: 2/2/3/3;
+  overflow-y: auto;
+  padding: 2rem;
+  margin-left: 250px;
+  margin-top: 80px;
+}
+
+.dashboard-graphContainer {
+  font-size: 2rem;
+  color: #00a7e1;
+  width: 70%;
 }
 
 .navBar {
   background-color: #ffffff;
   height: 7rem;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
   width: 100%;
+  z-index: 1100;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: 1fr;

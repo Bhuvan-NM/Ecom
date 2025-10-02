@@ -1,9 +1,11 @@
 .navBar {
-  background-color: $color-primary; //#FFFFFF
+  background-color: $color-primary;
   height: 7rem;
-  position: sticky;
+  position: fixed; // changed from sticky
   top: 0;
+  left: 0;
   width: 100%;
+  z-index: 1100;
 
   display: grid;
   grid-template-columns: repeat(3, 1fr);
