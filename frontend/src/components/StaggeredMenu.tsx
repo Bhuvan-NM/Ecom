@@ -1,10 +1,11 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { useNavigate } from "react-router-dom";
 
 export interface StaggeredMenuItem {
   label: string;
   ariaLabel: string;
-  link: string;
+  navigate: string;
 }
 
 export interface StaggeredMenuSocialItem {
@@ -58,6 +59,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   const textInnerRef = useRef<HTMLSpanElement | null>(null);
   const textWrapRef = useRef<HTMLSpanElement | null>(null);
   const [textLines, setTextLines] = useState<string[]>(["Menu", "Close"]);
+  const navigate = useNavigate();
 
   const openTlRef = useRef<gsap.core.Timeline | null>(null);
   const closeTweenRef = useRef<gsap.core.Tween | null>(null);
@@ -389,6 +391,27 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     animateText(target);
   }, [playOpen, playClose, animateIcon, animateColor, animateText]);
 
+  const handleMenuItemClick = useCallback(
+    (evt: React.MouseEvent<HTMLAnchorElement>, item: StaggeredMenuItem) => {
+      if (
+        evt.defaultPrevented ||
+        evt.button !== 0 ||
+        evt.altKey ||
+        evt.ctrlKey ||
+        evt.metaKey ||
+        evt.shiftKey
+      ) {
+        return;
+      }
+      evt.preventDefault();
+      navigate(item.navigate);
+      if (openRef.current) {
+        toggleMenu();
+      }
+    },
+    [navigate, toggleMenu]
+  );
+
   return (
     <div
       className={wrapperClasses}
@@ -489,9 +512,10 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                 >
                   <a
                     className="sm-panel-item"
-                    href={it.link}
+                    href={it.navigate}
                     aria-label={it.ariaLabel}
                     data-index={idx + 1}
+                    onClick={(evt) => handleMenuItemClick(evt, it)}
                   >
                     <span className="sm-panel-itemLabel">{it.label}</span>
                   </a>

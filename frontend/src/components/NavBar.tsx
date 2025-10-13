@@ -20,12 +20,12 @@ const NavBar = () => {
       {
         label: "Home",
         ariaLabel: "Go to the home page",
-        link: "/",
+        navigate: "/",
       },
       {
         label: user ? "Account" : "Sign in",
         ariaLabel: "Open your account page",
-        link: "/account",
+        navigate: "/account",
       },
     ];
 
@@ -33,7 +33,7 @@ const NavBar = () => {
       items.push({
         label: "Admin",
         ariaLabel: "Open the admin dashboard",
-        link: "/admin",
+        navigate: "/admin",
       });
     }
 
