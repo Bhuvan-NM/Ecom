@@ -3,10 +3,11 @@ import Logo from "../assets/icons/logo";
 import Profile from "../assets/icons/profile";
 import Search from "../assets/icons/search";
 import { motion } from "framer-motion";
-import { useState, useRef, useEffect, useContext } from "react";
+import { useState, useRef, useEffect, useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginRegister from "./LoginRegister";
 import { AuthContext } from "./AuthContext";
+import { StaggeredMenu, StaggeredMenuItem } from "./StaggeredMenu";
 
 const NavBar = () => {
   const [isLoginVisible, setIsLoginVisible] = useState(false);
@@ -14,6 +15,30 @@ const NavBar = () => {
   const [profilePosition, setProfilePosition] = useState({ x: 0, y: 0 });
   const { user } = useContext(AuthContext)!;
   const navigate = useNavigate();
+  const menuItems = useMemo(() => {
+    const items: StaggeredMenuItem[] = [
+      {
+        label: "Home",
+        ariaLabel: "Go to the home page",
+        link: "/",
+      },
+      {
+        label: user ? "Account" : "Sign in",
+        ariaLabel: "Open your account page",
+        link: "/account",
+      },
+    ];
+
+    if (user?.isAdmin) {
+      items.push({
+        label: "Admin",
+        ariaLabel: "Open the admin dashboard",
+        link: "/admin",
+      });
+    }
+
+    return items;
+  }, [user]);
 
   useEffect(() => {
     if (!isLoginVisible || !profileRef.current) return; // ✅ Prevents running when modal is closing
@@ -89,6 +114,17 @@ const NavBar = () => {
         >
           <Profile className="navBar__icon login" />
         </span>
+        <StaggeredMenu
+          className="navBar__menuToggle"
+          menuButtonColor="#003459"
+          openMenuButtonColor="#003459"
+          changeMenuColorOnOpen={false}
+          accentColor="#00a7e1"
+          colors={["#00a7e1", "#003459", "#00171f"]}
+          items={menuItems}
+          displaySocials={false}
+          displayItemNumbering={false}
+        />
       </div>
 
       {/* Logo */}
