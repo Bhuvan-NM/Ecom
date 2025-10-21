@@ -64,7 +64,7 @@ const NavBar = () => {
       const current = window.scrollY;
       const last = lastScrollYRef.current;
       const scrollingDown = current > last;
-      const scrolledPastOffset = current > 120;
+      const scrolledPastOffset = current > 1;
       if (scrollingDown && scrolledPastOffset) {
         setIsHidden(true);
       } else if (!scrollingDown) {

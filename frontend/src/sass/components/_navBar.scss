@@ -1,5 +1,5 @@
 .navBar {
-  background: transparent;
+  background: $color-primary;
   height: 7rem;
   position: fixed; // changed from sticky
   top: 0;
@@ -14,7 +14,8 @@
   padding: 0 0rem;
   z-index: 1100;
 
-  transition: transform 0.35s ease, box-shadow 0.35s ease, background-color 0.35s ease;
+  transition: transform 0.35s ease, box-shadow 0.35s ease,
+    background-color 0.35s ease;
   transform: translateY(0);
   will-change: transform;
 

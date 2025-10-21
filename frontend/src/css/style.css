@@ -307,6 +307,7 @@ body {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   padding: 1rem 0;
   z-index: 1000;
+  transition: top 0.35s ease;
 }
 
 .adminPortalSidebar {
@@ -329,6 +330,10 @@ body {
   padding-left: 2rem;
   width: 100%;
   font-size: 2rem;
+}
+
+.navBar.navBar--hidden + .admin-portal__content .adminPortalHeading {
+  top: 0;
 }
 
 .adminPortalSidebarItem {
@@ -366,7 +371,7 @@ body {
 }
 
 .navBar {
-  background: transparent;
+  background: #ffffff;
   height: 7rem;
   position: fixed;
   top: 0;
