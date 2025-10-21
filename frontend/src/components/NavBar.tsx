@@ -3,7 +3,7 @@ import Logo from "../assets/icons/logo";
 import Profile from "../assets/icons/profile";
 import Search from "../assets/icons/search";
 import { motion } from "framer-motion";
-import { useState, useRef, useEffect, useContext, useMemo } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginRegister from "./LoginRegister";
 import { AuthContext } from "./AuthContext";
@@ -15,30 +15,34 @@ const NavBar = () => {
   const [profilePosition, setProfilePosition] = useState({ x: 0, y: 0 });
   const { user } = useContext(AuthContext)!;
   const navigate = useNavigate();
-  const menuItems = useMemo(() => {
-    const items: StaggeredMenuItem[] = [
-      {
-        label: "Home",
-        ariaLabel: "Go to the home page",
-        navigate: "/",
-      },
-      {
-        label: user ? "Account" : "Sign in",
-        ariaLabel: "Open your account page",
-        navigate: "/account",
-      },
-    ];
+  const [isHidden, setIsHidden] = useState(false);
+  const lastScrollYRef = useRef(0);
+  const menuItems: StaggeredMenuItem[] = [
+    {
+      label: "Home",
+      ariaLabel: "Go to the home page",
+      navigate: "/",
+    },
+    user
+      ? {
+          label: "Account",
+          ariaLabel: "Open your account page",
+          navigate: "/account",
+        }
+      : {
+          label: "Sign in",
+          ariaLabel: "Open the sign in modal",
+          onSelect: () => setIsLoginVisible(true),
+        },
+  ];
 
-    if (user?.isAdmin) {
-      items.push({
-        label: "Admin",
-        ariaLabel: "Open the admin dashboard",
-        navigate: "/admin",
-      });
-    }
-
-    return items;
-  }, [user]);
+  if (user?.isAdmin) {
+    menuItems.push({
+      label: "Admin",
+      ariaLabel: "Open the admin dashboard",
+      navigate: "/admin",
+    });
+  }
 
   useEffect(() => {
     if (!isLoginVisible || !profileRef.current) return; // ✅ Prevents running when modal is closing
@@ -54,6 +58,30 @@ const NavBar = () => {
     }, 0);
   }, [isLoginVisible]);
 
+  useEffect(() => {
+    lastScrollYRef.current = window.scrollY;
+    const handleScroll = () => {
+      const current = window.scrollY;
+      const last = lastScrollYRef.current;
+      const scrollingDown = current > last;
+      const scrolledPastOffset = current > 120;
+      if (scrollingDown && scrolledPastOffset) {
+        setIsHidden(true);
+      } else if (!scrollingDown) {
+        setIsHidden(false);
+      }
+      lastScrollYRef.current = current;
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (isLoginVisible) {
+      setIsHidden(false);
+    }
+  }, [isLoginVisible]);
+
   const hanpleProfileClick = () => {
     if (user) {
       navigate("/account");
@@ -63,7 +91,7 @@ const NavBar = () => {
   };
 
   return (
-    <nav className="navBar">
+    <nav className={`navBar${isHidden ? " navBar--hidden" : ""}`}>
       {/* Radial Background (Framer Motion) */}
       {isLoginVisible && (
         <motion.div

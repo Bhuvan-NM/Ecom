@@ -87,15 +87,6 @@ const Account = () => {
     <div className="account_main">
       <NavBar />
 
-      {user?.isAdmin && (
-        <button
-          className="account__admin-link"
-          onClick={() => navigate("/admin")}
-        >
-          Go to Admin Portal
-        </button>
-      )}
-
       <div className="account_container">
         <div className="account_card-profile">
           {isEditing ? (
@@ -251,6 +242,15 @@ const Account = () => {
           <h3>Order History</h3>
           {/* Order history logic here */}
         </div>
+
+        {user?.isAdmin && (
+          <button
+            className="account__admin-link"
+            onClick={() => navigate("/admin")}
+          >
+            Go to Admin Portal
+          </button>
+        )}
       </div>
     </div>
   );

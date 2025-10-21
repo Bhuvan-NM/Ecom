@@ -58,7 +58,7 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
 
     try {
       if (isRegister) {
-        // 🚀 REGISTER API CALL
+        // REGISTER API CALL
         const response = await axios.post(
           "http://localhost:1337/auth/register",
           formData,

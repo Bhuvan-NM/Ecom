@@ -1,5 +1,5 @@
 .navBar {
-  background-color: $color-primary;
+  background: transparent;
   height: 7rem;
   position: fixed; // changed from sticky
   top: 0;
@@ -14,7 +14,18 @@
   padding: 0 0rem;
   z-index: 1100;
 
-  transition: all 0.3s;
+  transition: transform 0.35s ease, box-shadow 0.35s ease, background-color 0.35s ease;
+  transform: translateY(0);
+  will-change: transform;
+
+  &.navBar--hidden {
+    transform: translateY(-110%);
+    box-shadow: none;
+  }
+
+  &:not(.navBar--hidden) {
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.08);
+  }
 
   & &__gridPos-1 {
     grid-area: 1/2/2/3;

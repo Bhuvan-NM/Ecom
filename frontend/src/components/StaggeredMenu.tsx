@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 export interface StaggeredMenuItem {
   label: string;
   ariaLabel: string;
-  navigate: string;
+  navigate?: string;
+  onSelect?: () => void;
 }
 
 export interface StaggeredMenuSocialItem {
@@ -59,7 +60,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   const textInnerRef = useRef<HTMLSpanElement | null>(null);
   const textWrapRef = useRef<HTMLSpanElement | null>(null);
   const [textLines, setTextLines] = useState<string[]>(["Menu", "Close"]);
-  const navigate = useNavigate();
+  const routerNavigate = useNavigate();
 
   const openTlRef = useRef<gsap.core.Timeline | null>(null);
   const closeTweenRef = useRef<gsap.core.Tween | null>(null);
@@ -404,12 +405,17 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         return;
       }
       evt.preventDefault();
-      navigate(item.navigate);
+      if (item.onSelect) {
+        item.onSelect();
+      }
+      if (item.navigate) {
+        routerNavigate(item.navigate);
+      }
       if (openRef.current) {
         toggleMenu();
       }
     },
-    [navigate, toggleMenu]
+    [routerNavigate, toggleMenu]
   );
 
   return (
@@ -512,7 +518,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                 >
                   <a
                     className="sm-panel-item"
-                    href={it.navigate}
+                    href={it.navigate ?? "#"}
                     aria-label={it.ariaLabel}
                     data-index={idx + 1}
                     onClick={(evt) => handleMenuItemClick(evt, it)}
