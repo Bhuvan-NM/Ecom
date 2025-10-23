@@ -82,4 +82,42 @@
     color: $color-secondary;
     width: 70%;
   }
+
+  &-dataCardContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 3rem;
+    margin-bottom: 4rem;
+  }
+
+  &-dataCard {
+    flex: 1 1 250px; // ✅ flexible width, but not full width
+    max-width: 300px; // optional: cap card size
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: $color-primary;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+
+    &-Title {
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+      color: $data-Card-secondary-text;
+    }
+
+    &-Value {
+      font-size: 2.4rem;
+      font-weight: bold;
+      color: $data-Card-primary-text;
+    }
+
+    &-Description {
+      font-size: 1.4rem;
+      color: $data-Card-tertiary-text;
+    }
+  }
 }

@@ -363,6 +363,39 @@ body {
   color: #00a7e1;
   width: 70%;
 }
+.dashboard-dataCardContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3rem;
+  margin-bottom: 4rem;
+}
+.dashboard-dataCard {
+  flex: 1 1 250px;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+.dashboard-dataCard-Title {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  color: #777777;
+}
+.dashboard-dataCard-Value {
+  font-size: 2.4rem;
+  font-weight: bold;
+  color: #333333;
+}
+.dashboard-dataCard-Description {
+  font-size: 1.4rem;
+  color: #aaaaaa;
+}
 
 .darkveil-canvas {
   width: 100%;
@@ -432,6 +465,54 @@ body {
 }
 .navBar__item {
   margin-left: 0;
+}
+.navBar__adminToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: transparent;
+  border: none;
+  color: #003459;
+  cursor: pointer;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.1rem;
+  text-transform: uppercase;
+  padding: 0;
+  position: relative;
+}
+.navBar__adminToggle:focus-visible {
+  outline: 2px solid #003459;
+  outline-offset: 4px;
+  border-radius: 0.4rem;
+}
+.navBar__adminToggle:hover .navBar__adminToggleIconLine {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+.navBar__adminToggle:hover .navBar__adminToggleIconLine--vertical {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+.navBar__adminToggleIcon {
+  position: relative;
+  width: 1.4rem;
+  height: 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.navBar__adminToggleIconLine {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 0.2rem;
+  background: currentColor;
+  border-radius: 0.2rem;
+  transform: translate(-50%, -50%);
+  transition: transform 0.3s ease;
+}
+.navBar__adminToggleIconLine--vertical {
+  transform: translate(-50%, -50%) rotate(90deg);
 }
 .navBar__menuToggle {
   display: flex;
@@ -846,7 +927,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
+  z-index: 1300;
 }
 
 .auth__form {
@@ -858,6 +939,7 @@ body {
   display: flex;
   align-items: center; /* ✅ Centers vertically */
   justify-content: center; /* ✅ Centers horizontally */
+  z-index: 1310;
 }
 .auth__form__container {
   display: grid;

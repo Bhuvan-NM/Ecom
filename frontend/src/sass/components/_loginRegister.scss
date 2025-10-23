@@ -10,7 +10,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 999;
+    z-index: 1300;
   }
 }
 
@@ -24,6 +24,7 @@
     display: flex;
     align-items: center; /* ✅ Centers vertically */
     justify-content: center; /* ✅ Centers horizontally */
+    z-index: 1310;
 
     &__container {
       display: grid;

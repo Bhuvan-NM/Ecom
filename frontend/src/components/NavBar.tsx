@@ -91,7 +91,67 @@ const NavBar = () => {
   };
 
   return (
-    <nav className={`navBar${isHidden ? " navBar--hidden" : ""}`}>
+    <>
+      <nav className={`navBar${isHidden ? " navBar--hidden" : ""}`}>
+        {/* Search Bar */}
+        <form className="searchBar navBar__gridPos-1">
+          <input
+            type="text"
+            className="searchBar__input"
+            placeholder="Search"
+          />
+          <Search className="searchBar__icon" />
+        </form>
+
+        {/* Navigation Items */}
+        <div className="navBar__gridPos-2">
+          <span className="navBar__item navBar__gridPos-2">
+            <Cart className="navBar__icon" />
+          </span>
+          {user?.isAdmin && (
+            <button
+              type="button"
+              className="navBar__item navBar__adminToggle"
+              onClick={() => navigate("/admin")}
+            >
+              <span className="navBar__adminToggleText">Admin</span>
+              <span
+                className="navBar__adminToggleIcon"
+                aria-hidden="true"
+              >
+                <span className="navBar__adminToggleIconLine" />
+                <span className="navBar__adminToggleIconLine navBar__adminToggleIconLine--vertical" />
+              </span>
+            </button>
+          )}
+          <span
+            ref={profileRef}
+            className="navBar__item navBar__gridPos-2 cursor-pointer"
+            onClick={() => hanpleProfileClick()}
+          >
+            <Profile className="navBar__icon login" />
+          </span>
+          <StaggeredMenu
+            className="navBar__menuToggle"
+            menuButtonColor="#003459"
+            openMenuButtonColor="#003459"
+            changeMenuColorOnOpen={false}
+            accentColor="#00a7e1"
+            colors={["#00a7e1", "#003459", "#00171f"]}
+            items={menuItems}
+            displaySocials={false}
+            displayItemNumbering={false}
+          />
+        </div>
+
+        {/* Logo */}
+        <div
+          className="navBar__gridPos-3"
+          onClick={() => navigate("/")}
+        >
+          <Logo className="logo" />
+        </div>
+      </nav>
       {/* Radial Background (Framer Motion) */}
       {isLoginVisible && (
         <motion.div
@@ -111,58 +171,7 @@ const NavBar = () => {
           <LoginRegister setIsLoginVisible={setIsLoginVisible} />
         </motion.div>
       )}
-
-      {/* Search Bar */}
-      <form className="searchBar navBar__gridPos-1">
-        <input
-          type="text"
-          className="searchBar__input"
-          placeholder="Search"
-        />
-        <Search className="searchBar__icon" />
-      </form>
-
-      {/* Navigation Items */}
-      <div className="navBar__gridPos-2">
-        <span className="navBar__item navBar__gridPos-2">
-          <Cart className="navBar__icon" />
-        </span>
-        {user?.isAdmin && (
-          <span
-            className="navBar__item navBar__gridPos-2 cursor-pointer"
-            onClick={() => navigate("/admin")}
-          >
-            Admin
-          </span>
-        )}
-        <span
-          ref={profileRef}
-          className="navBar__item navBar__gridPos-2 cursor-pointer"
-          onClick={() => hanpleProfileClick()}
-        >
-          <Profile className="navBar__icon login" />
-        </span>
-        <StaggeredMenu
-          className="navBar__menuToggle"
-          menuButtonColor="#003459"
-          openMenuButtonColor="#003459"
-          changeMenuColorOnOpen={false}
-          accentColor="#00a7e1"
-          colors={["#00a7e1", "#003459", "#00171f"]}
-          items={menuItems}
-          displaySocials={false}
-          displayItemNumbering={false}
-        />
-      </div>
-
-      {/* Logo */}
-      <div
-        className="navBar__gridPos-3"
-        onClick={() => navigate("/")}
-      >
-        <Logo className="logo" />
-      </div>
-    </nav>
+    </>
   );
 };
 

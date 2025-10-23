@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 // =====================
 // Item Schema
@@ -21,7 +21,7 @@ const itemSchema = new mongoose.Schema({
   lastUpdated: { type: Date, default: Date.now },
 });
 
-export const Item = mongoose.model("Item", itemSchema);
+const Item = mongoose.model("Item", itemSchema);
 
 // =====================
 // Sale Schema
@@ -35,7 +35,17 @@ const saleSchema = new mongoose.Schema({
     name: String,
     email: String,
   },
-  saleDate: { type: Date, default: Date.now },
+  saleDate: { type: Date, default: () => new Date() }, // full timestamp
+  saleTime: {
+    type: String,
+    default: () =>
+      new Date().toLocaleTimeString("en-US", {
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }),
+  },
   paymentMethod: {
     type: String,
     enum: ["Cash", "Credit Card", "Debit Card", "Online"],
@@ -44,7 +54,7 @@ const saleSchema = new mongoose.Schema({
   total: { type: Number, required: true },
 });
 
-export const Sale = mongoose.model("Sale", saleSchema);
+const Sale = mongoose.model("Sale", saleSchema);
 
 // =====================
 // Restock Schema
@@ -62,4 +72,6 @@ const restockSchema = new mongoose.Schema({
   totalCost: { type: Number, required: true },
 });
 
-export const Restock = mongoose.model("Restock", restockSchema);
+const Restock = mongoose.model("Restock", restockSchema);
+
+module.exports = { Item, Sale, Restock };

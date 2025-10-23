@@ -1,6 +1,6 @@
 const express = require("express");
-const InventoryItem = require("@/models/InventoryItem");
-const authMiddleware = require("@/middleware/authMiddleware");
+const { Item: InventoryItem } = require("../models/InventoryItem");
+const authMiddleware = require("../middleware/authMiddleware");
 require("dotenv").config();
 
 // Initialize Router
@@ -24,3 +24,5 @@ router.post("/inventory", async (req, res) => {
     res.status(500).json({ message: "Failed to save item", error: err });
   }
 });
+
+module.exports = router;
