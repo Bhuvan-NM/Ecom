@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import NavBar from "../components/NavBar";
 import { AuthContext } from "../components/AuthContext";
 import { useNavigate } from "react-router-dom";
-import api from "@/lib/api";
+import api from "../lib/api";
 import Edit from "../assets/icons/Edit";
 import ProfileImageSolid from "../assets/icons/ProfileImageSolid";
 import Tick from "../assets/icons/Tick";
