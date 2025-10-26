@@ -13,12 +13,12 @@ dotenv.config();
 
 const app = express();
 
+// ----- CORS -----
 const defaultOrigins = [
   "http://localhost:5173",
-  "http://localhost:1337",
   process.env.FRONTEND_URL,
   process.env.RENDER_EXTERNAL_URL,
-  "https://ecom-t5ly.onrender.com",
+  "https://ecom-t5ly.onrender.com", // your frontend
 ].filter(Boolean);
 
 const normalizeOrigin = (origin = "") => origin.replace(/\/$/, "");
@@ -29,13 +29,8 @@ console.log("🔐 CORS allowed origins:", [...allowedOrigins]);
 const corsOptions = {
   origin(origin, callback) {
     if (!origin) return callback(null, true);
-
     const normalizedOrigin = normalizeOrigin(origin);
-
-    if (allowedOrigins.has(normalizedOrigin)) {
-      return callback(null, true);
-    }
-
+    if (allowedOrigins.has(normalizedOrigin)) return callback(null, true);
     console.warn(`❌ CORS blocked request from origin: ${origin}`);
     return callback(new Error("Not allowed by CORS"));
   },
@@ -49,28 +44,28 @@ app.options("*", cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
-// Connect MongoDB
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(async () => {
-    console.log("✅ MongoDB Connected");
-    const PORT = process.env.PORT || 1337;
-
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-
-    // Serve static files from frontend/dist
-    app.use(express.static(path.join(__dirname, "../frontend/dist")));
-
-    // All other routes -> React index.html
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
-    });
-
-    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-  })
-  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
-
-// Routes
+// ----- Routes -----
 app.use("/auth", authRoutes);
 app.use("/api/reports", reportRoutes);
+
+// ----- Serve frontend (AFTER API routes) -----
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+});
+
+// ----- Mongo + Server -----
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("✅ MongoDB Connected");
+    const PORT = process.env.PORT || 1337;
+    app.listen(PORT, "0.0.0.0", () =>
+      console.log(`🚀 Server running on port ${PORT}`)
+    );
+  })
+  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
