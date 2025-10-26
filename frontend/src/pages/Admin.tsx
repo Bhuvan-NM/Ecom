@@ -21,13 +21,10 @@ const Admin: React.FC = () => {
 
     const fetchAdminStatus = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:1337/auth/admin/overview",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true,
-          }
-        );
+        const response = await axios.get("/auth/admin/overview", {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        });
 
         setStatusMessage(response.data?.message ?? "Admin data loaded");
       } catch (error) {

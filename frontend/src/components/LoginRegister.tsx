@@ -59,19 +59,15 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
     try {
       if (isRegister) {
         // REGISTER API CALL
-        const response = await axios.post(
-          "http://localhost:1337/auth/register",
-          formData,
-          {
-            withCredentials: true, // Enable cookies/auth token sharing
-          }
-        );
+        const response = await axios.post("/auth/register", formData, {
+          withCredentials: true, // Enable cookies/auth token sharing
+        });
 
         alert("Registration successful! Please login.");
       } else {
         // 🚀 LOGIN API CALL
         const response = await axios.post(
-          "http://localhost:1337/auth/login",
+          "/auth/login",
           {
             email: formData.email,
             password: formData.password,

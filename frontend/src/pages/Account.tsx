@@ -62,11 +62,9 @@ const Account = () => {
         payload.password = formData.password;
       }
 
-      const response = await axios.put(
-        "http://localhost:1337/auth/update",
-        payload,
-        { withCredentials: true }
-      );
+      const response = await axios.put("/auth/update", payload, {
+        withCredentials: true,
+      });
 
       // ✅ Update user context
       login(response.data.user, response.data.token);
