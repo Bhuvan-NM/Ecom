@@ -1,10 +1,12 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
-const authMiddleware = require("../middleware/authMiddleware");
-const requireAdmin = require("../middleware/adminMiddleware");
-require("dotenv").config();
+import express from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+import requireAdmin from "../middleware/adminMiddleware.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const router = express.Router();
 
@@ -22,15 +24,12 @@ router.post("/register", async (req, res) => {
   try {
     const { firstName, lastName, phoneNumber, email, password } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser)
       return res.status(400).json({ message: "User already exists" });
 
-    // Hash the password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new user
     const newUser = new User({
       firstName,
       lastName,
@@ -46,33 +45,29 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// ✅ LOGIN ROUTE
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // ✅ Check if user exists
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
-    // ✅ Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
 
-    // ✅ Generate a JWT Token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
 
-    // ✅ Set token in HTTP-only cookie
     res.cookie("token", token, {
-      httpOnly: true, // Prevents JavaScript access (XSS protection)
-      secure: process.env.NODE_ENV === "production", // Set to true in production
-      sameSite: "strict", // Helps prevent CSRF attacks
-      maxAge: 3600000, // 1 hour expiration
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 3600000,
     });
 
-    // ✅ Send user data (without password) in response
     res.status(200).json({
       message: "Login successful",
       token,
@@ -91,6 +86,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// ✅ UPDATE ROUTE
 router.put("/update", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -145,7 +141,7 @@ router.put("/update", authMiddleware, async (req, res) => {
   }
 });
 
-
+// ✅ USER INFO ROUTE
 router.get("/me", authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
@@ -169,9 +165,9 @@ router.get("/me", authMiddleware, async (req, res) => {
   }
 });
 
+// ✅ ADMIN ROUTE
 router.get("/admin/overview", authMiddleware, requireAdmin, (req, res) => {
   res.json({ message: "Admin access granted" });
 });
 
-
-module.exports = router;
+export default router;

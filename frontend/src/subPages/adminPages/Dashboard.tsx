@@ -10,6 +10,7 @@ const Dashboard = () => {
     month: number;
     year: number;
     yearToDate: number;
+    totalOrders: number;
   }
 
   const [salesData, setSalesData] = useState<SalesSummary | null>(null);
@@ -126,7 +127,7 @@ const Dashboard = () => {
         />
         <DataCard
           title="Total Orders"
-          value="1,200"
+          value={salesData?.totalOrders?.toString() ?? "0"}
           description="Up 10% from last month"
           color="bg-blue-100"
           className="dashboard-dataCard"

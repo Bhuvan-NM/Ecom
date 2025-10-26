@@ -1,17 +1,18 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 // =====================
 // Item Schema
 // =====================
 const itemSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  sku: { type: String, unique: true, required: true }, // Stock Keeping Unit
+  sku: { type: String, unique: true, required: true },
   category: { type: String, index: true },
   price: { type: Number, required: true },
-  quantity: { type: Number, required: true, default: 0 }, // current stock
+  quantity: { type: Number, required: true, default: 0 },
   supplier: {
     name: String,
     contact: String,
+    costPerUnit: Number,
   },
   location: {
     warehouse: String,
@@ -21,7 +22,7 @@ const itemSchema = new mongoose.Schema({
   lastUpdated: { type: Date, default: Date.now },
 });
 
-const Item = mongoose.model("Item", itemSchema);
+export const Item = mongoose.model("Item", itemSchema);
 
 // =====================
 // Sale Schema
@@ -30,12 +31,12 @@ const saleSchema = new mongoose.Schema({
   itemId: { type: mongoose.Schema.Types.ObjectId, ref: "Item", required: true },
   sku: { type: String, required: true },
   quantitySold: { type: Number, required: true },
-  salePrice: { type: Number, required: true }, // store price at time of sale
+  salePrice: { type: Number, required: true },
   customer: {
     name: String,
     email: String,
   },
-  saleDate: { type: Date, default: () => new Date() }, // full timestamp
+  saleDate: { type: Date, default: () => new Date() },
   saleTime: {
     type: String,
     default: () =>
@@ -54,7 +55,60 @@ const saleSchema = new mongoose.Schema({
   total: { type: Number, required: true },
 });
 
-const Sale = mongoose.model("Sale", saleSchema);
+saleSchema.pre("save", async function (next) {
+  try {
+    if (!this.itemId || !this.quantitySold) return next();
+
+    const ItemModel = mongoose.model("Item");
+    const item = await ItemModel.findById(this.itemId);
+
+    if (!item) {
+      return next(new Error(`❌ Item not found for SKU ${this.sku}`));
+    }
+
+    if (item.quantity < this.quantitySold) {
+      return next(
+        new Error(
+          `🚫 Not enough stock for SKU ${this.sku}. Available: ${item.quantity}, Requested: ${this.quantitySold}`
+        )
+      );
+    }
+
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+saleSchema.post("save", async function (doc) {
+  try {
+    if (!doc.itemId || !doc.quantitySold) return;
+
+    const ItemModel = mongoose.model("Item");
+    const updatedItem = await ItemModel.findByIdAndUpdate(
+      doc.itemId,
+      {
+        $inc: { quantity: -doc.quantitySold },
+        $set: { lastUpdated: new Date() },
+      },
+      { new: true }
+    );
+
+    if (updatedItem && updatedItem.quantity < 0) {
+      console.warn(
+        `⚠️ [Inventory] Stock for ${doc.sku} went negative (${updatedItem.quantity}).`
+      );
+    } else {
+      console.log(
+        `✅ [Inventory] Reduced stock for ${doc.sku} by -${doc.quantitySold}`
+      );
+    }
+  } catch (err) {
+    console.error("❌ [Inventory] Failed to update item on sale:", err);
+  }
+});
+
+export const Sale = mongoose.model("Sale", saleSchema);
 
 // =====================
 // Restock Schema
@@ -72,6 +126,26 @@ const restockSchema = new mongoose.Schema({
   totalCost: { type: Number, required: true },
 });
 
-const Restock = mongoose.model("Restock", restockSchema);
+restockSchema.post("save", async function (doc) {
+  try {
+    if (!doc.itemId || !doc.quantityAdded) return;
 
-module.exports = { Item, Sale, Restock };
+    const ItemModel = mongoose.model("Item");
+    await ItemModel.findByIdAndUpdate(
+      doc.itemId,
+      {
+        $inc: { quantity: doc.quantityAdded },
+        $set: { lastUpdated: new Date() },
+      },
+      { new: true }
+    );
+
+    console.log(
+      `✅ [Inventory] Increased stock for ${doc.sku} by +${doc.quantityAdded}`
+    );
+  } catch (err) {
+    console.error("❌ [Inventory] Failed to update item on restock:", err);
+  }
+});
+
+export const Restock = mongoose.model("Restock", restockSchema);

@@ -71,16 +71,30 @@ export async function getMonthlyRestockReport() {
  */
 export async function getProfitReport() {
   try {
+    // Sum all sale totals (revenue)
     const sales = await Sale.aggregate([
       { $group: { _id: null, revenue: { $sum: "$total" } } },
     ]);
 
+    // Sum all restock total costs
     const restocks = await Restock.aggregate([
       { $group: { _id: null, cost: { $sum: "$totalCost" } } },
     ]);
 
+    // Sum all supplier costs (if applicable)
+    const supplier = await Item.aggregate([
+      {
+        $group: { _id: null, supplierCost: { $sum: "$supplier.supplierCost" } },
+      },
+    ]);
+
+    // Extract numbers safely
     const revenue = sales[0]?.revenue || 0;
-    const cost = restocks[0]?.cost || 0;
+    const restockCost = restocks[0]?.cost || 0;
+    const supplierCost = supplier[0]?.supplierCost || 0;
+
+    // Total cost includes both restocks and supplier costs
+    const cost = restockCost + supplierCost;
     const profit = revenue - cost;
 
     return { revenue, cost, profit };
@@ -115,12 +129,16 @@ export async function getSalesSummary() {
       return result.length ? result[0].total : 0;
     };
 
+    //Total Num of Orders
+    const totalOrders = await Sale.countDocuments();
+
     return {
       day: await sumSales(startOfDay),
       week: await sumSales(startOfWeek),
       month: await sumSales(startOfMonth),
       year: await sumSales(startOfYear),
       yearToDate: await sumSales(startOfYear), // same as yearly total
+      totalOrders,
     };
   } catch (err) {
     console.error("❌ Error generating sales summary:", err);
