@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import NavBar from "../components/NavBar";
 import { AuthContext } from "../components/AuthContext";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "@/lib/api";
 import Edit from "../assets/icons/Edit";
 import ProfileImageSolid from "../assets/icons/ProfileImageSolid";
 import Tick from "../assets/icons/Tick";
@@ -62,9 +62,7 @@ const Account = () => {
         payload.password = formData.password;
       }
 
-      const response = await axios.put("/auth/update", payload, {
-        withCredentials: true,
-      });
+      const response = await api.put("/auth/update", payload);
 
       // ✅ Update user context
       login(response.data.user, response.data.token);

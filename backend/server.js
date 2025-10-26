@@ -15,6 +15,7 @@ const app = express();
 
 const defaultOrigins = [
   "http://localhost:5173",
+  "http://localhost:1337",
   process.env.FRONTEND_URL,
   process.env.RENDER_EXTERNAL_URL,
   "https://ecom-t5ly.onrender.com",

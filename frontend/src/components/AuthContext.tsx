@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
-import axios from "axios";
+import api from "../lib/api";
 
 interface User {
   id: string;
@@ -45,9 +45,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     (async () => {
       try {
-        const response = await axios.get("/auth/me", {
+        const response = await api.get("/auth/me", {
           headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
         });
 
         if (isSubscribed && response.data?.user) {

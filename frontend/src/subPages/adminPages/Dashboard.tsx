@@ -1,6 +1,6 @@
 import LineGraph from "../../components/LineGraph";
 import DataCard from "../../components/DataCard";
-import axios from "axios";
+import api from "@/lib/api";
 import { useState, useEffect } from "react";
 
 const Dashboard = () => {
@@ -23,7 +23,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const salesResponse = await axios.get("/api/reports/sales-summary");
+        const salesResponse = await api.get("/api/reports/sales-summary");
         console.log("Sales Summary Response:", salesResponse.data);
         // Defensive check for sales summary data
         const data = salesResponse.data;
@@ -34,7 +34,7 @@ const Dashboard = () => {
           setSalesData(null);
         }
 
-        const profitResponse = await axios.get("/api/reports/profit");
+        const profitResponse = await api.get("/api/reports/profit");
         console.log("Profit Response:", profitResponse.data);
         // Type guard for profit data
         const pData = profitResponse.data;

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { AuthContext } from "./AuthContext"; // Import AuthContext
 import XMark from "../assets/icons/XMark";
 import Logo from "../assets/icons/logo";
@@ -59,21 +59,16 @@ const LoginRegister = ({ setIsLoginVisible }: LoginRegisterProps) => {
     try {
       if (isRegister) {
         // REGISTER API CALL
-        const response = await axios.post("/auth/register", formData, {
-          withCredentials: true, // Enable cookies/auth token sharing
-        });
+        const response = await api.post("/auth/register", formData);
 
         alert("Registration successful! Please login.");
       } else {
         // 🚀 LOGIN API CALL
-        const response = await axios.post(
+        const response = await api.post(
           "/auth/login",
           {
             email: formData.email,
             password: formData.password,
-          },
-          {
-            withCredentials: true,
           }
         );
 
