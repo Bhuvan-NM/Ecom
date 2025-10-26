@@ -25,7 +25,9 @@ const Admin: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
+        console.log(`${statusMessage}`);
         setStatusMessage(response.data?.message ?? "Admin data loaded");
+        console.log(`${statusMessage}`);
       } catch (error) {
         setStatusMessage("Unable to load admin data");
       }
