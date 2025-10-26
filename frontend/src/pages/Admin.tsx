@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api from "@/lib/api";
+import api from "../lib/api";
 import NavBar from "../components/NavBar";
 import Dashboard from "../subPages/adminPages/Dashboard";
 import Inventory from "../subPages/adminPages/Inventory";
