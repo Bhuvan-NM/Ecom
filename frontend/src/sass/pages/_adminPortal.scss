@@ -78,6 +78,7 @@
     transform: translate(6rem, -1rem) scale(0.3);
     opacity: 0;
     background: rgba($color-primary, 0.95);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     border-radius: 3rem;
     padding: 2.5rem;
@@ -161,6 +162,7 @@
     inset: 0;
     background: rgba(0, 0, 0, 0.25);
     z-index: 1250;
+    -webkit-backdrop-filter: blur(2px);
     backdrop-filter: blur(2px);
   }
 }
@@ -196,6 +198,72 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
     gap: 2.5rem;
+    position: relative;
+  }
+
+  &-rangeMenu {
+    position: relative;
+  }
+
+  &-rangeButton {
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
+    border: none;
+    background: rgba($color-tertiary, 0.1);
+    color: $color-tertiary;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+
+    &:hover {
+      background: rgba($color-tertiary, 0.2);
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+      transform: none;
+    }
+  }
+
+  &-rangeDropdown {
+    position: absolute;
+    top: 3.2rem;
+    right: 0;
+    background: rgba($color-primary, 0.98);
+    border-radius: 1.2rem;
+    box-shadow: 0 1.4rem 3.2rem rgba(0, 0, 0, 0.15);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    min-width: 15rem;
+    z-index: 50;
+  }
+
+  &-rangeOption {
+    border: none;
+    border-radius: 0.8rem;
+    background: rgba($color-tertiary, 0.08);
+    color: $color-tertiary;
+    padding: 0.6rem 1rem;
+    text-align: left;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background 0.2s ease, transform 0.2s ease;
+
+    &:hover {
+      background: rgba($color-tertiary, 0.15);
+      transform: translateX(2px);
+    }
+
+    &--active {
+      background: rgba($color-secondary, 0.2);
+      color: $color-secondary;
+      font-weight: 600;
+    }
   }
 
   &-dataCard {
@@ -225,6 +293,100 @@
       color: $data-Card-tertiary-text;
     }
   }
+
+  &-chartCard {
+    background-color: $color-primary;
+    border-radius: 2rem;
+    padding: 2.4rem;
+    box-shadow: 0 1.2rem 2.4rem rgba(0, 0, 0, 0.1);
+    min-height: 32rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.2rem;
+      margin-bottom: 1.4rem;
+
+      h4 {
+        margin: 0;
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: $color-tertiary;
+      }
+    }
+
+    &__loading {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24rem;
+      --rli-color: $color-secondary;
+    }
+
+    &__graph {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 28rem;
+
+      canvas {
+        width: 100% !important;
+        height: 100% !important;
+      }
+    }
+  }
+
+  &-error,
+  &-empty {
+    background-color: rgba($color-primary, 0.95);
+    border-radius: 2rem;
+    padding: 3rem 3.5rem;
+    text-align: center;
+    box-shadow: 0 1rem 2.6rem rgba(0, 0, 0, 0.12);
+    display: grid;
+    gap: 1.6rem;
+    justify-items: center;
+    color: $color-tertiary;
+
+    button {
+      padding: 0.8rem 1.8rem;
+      border-radius: 999px;
+      border: none;
+      background: $color-secondary;
+      color: $color-primary;
+      font-size: 1.2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 0.8rem 1.8rem rgba($color-secondary, 0.35);
+      }
+    }
+  }
+
+  &-empty {
+    color: rgba($color-tertiary, 0.7);
+  }
+
+  &-emptyNotice {
+    margin-top: 1.5rem;
+    font-size: 1.3rem;
+    color: rgba($color-tertiary, 0.65);
+    text-align: center;
+  }
+}
+
+.dataCard__actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 @media (max-width: 62em) {

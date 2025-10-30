@@ -1,0 +1,10 @@
+.lineGraph__container {
+  position: relative;
+  width: 100%;
+  min-height: 28rem;
+
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}

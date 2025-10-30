@@ -83,7 +83,7 @@ const Admin: React.FC = () => {
               type="button"
               className="adminPortalFloatingMenu__trigger"
               aria-label={isMenuOpen ? "Close admin navigation" : "Open admin navigation"}
-              aria-expanded={isMenuOpen}
+              aria-expanded={isMenuOpen ? "true" : "false"}
               onClick={toggleMenu}
             >
               <span />

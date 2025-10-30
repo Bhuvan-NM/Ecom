@@ -36,6 +36,7 @@
 .sm-logo {
   display: flex;
   align-items: center;
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -132,8 +133,8 @@
   width: clamp(260px, 38vw, 420px);
   height: 100%;
   background: white;
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
   padding: 6em 2em 2em 2em;
@@ -320,6 +321,7 @@
   color: var(--sm-accent, #5227ff);
   letter-spacing: 0;
   pointer-events: none;
+  -webkit-user-select: none;
   user-select: none;
   opacity: var(--sm-num-opacity, 0);
 }

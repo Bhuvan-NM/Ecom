@@ -383,6 +383,7 @@ body {
   transform: translate(6rem, -1rem) scale(0.3);
   opacity: 0;
   background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-radius: 3rem;
   padding: 2.5rem;
@@ -453,6 +454,7 @@ body {
   inset: 0;
   background: rgba(0, 0, 0, 0.25);
   z-index: 1250;
+  -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
 }
 
@@ -484,6 +486,64 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
   gap: 2.5rem;
+  position: relative;
+}
+.dashboard-rangeMenu {
+  position: relative;
+}
+.dashboard-rangeButton {
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  background: rgba(0, 52, 89, 0.1);
+  color: #003459;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.dashboard-rangeButton:hover {
+  background: rgba(0, 52, 89, 0.2);
+  transform: translateY(-1px);
+}
+.dashboard-rangeButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+.dashboard-rangeDropdown {
+  position: absolute;
+  top: 3.2rem;
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 1.2rem;
+  box-shadow: 0 1.4rem 3.2rem rgba(0, 0, 0, 0.15);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 15rem;
+  z-index: 50;
+}
+.dashboard-rangeOption {
+  border: none;
+  border-radius: 0.8rem;
+  background: rgba(0, 52, 89, 0.08);
+  color: #003459;
+  padding: 0.6rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.dashboard-rangeOption:hover {
+  background: rgba(0, 52, 89, 0.15);
+  transform: translateX(2px);
+}
+.dashboard-rangeOption--active {
+  background: rgba(0, 167, 225, 0.2);
+  color: #00a7e1;
+  font-weight: 600;
 }
 .dashboard-dataCard {
   display: flex;
@@ -508,6 +568,88 @@ body {
 .dashboard-dataCard-Description {
   font-size: 1.3rem;
   color: #aaaaaa;
+}
+.dashboard-chartCard {
+  background-color: #ffffff;
+  border-radius: 2rem;
+  padding: 2.4rem;
+  box-shadow: 0 1.2rem 2.4rem rgba(0, 0, 0, 0.1);
+  min-height: 32rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.dashboard-chartCard__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  margin-bottom: 1.4rem;
+}
+.dashboard-chartCard__header h4 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #003459;
+}
+.dashboard-chartCard__loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24rem;
+  --rli-color: $color-secondary;
+}
+.dashboard-chartCard__graph {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 28rem;
+}
+.dashboard-chartCard__graph canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+.dashboard-error, .dashboard-empty {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 2rem;
+  padding: 3rem 3.5rem;
+  text-align: center;
+  box-shadow: 0 1rem 2.6rem rgba(0, 0, 0, 0.12);
+  display: grid;
+  gap: 1.6rem;
+  justify-items: center;
+  color: #003459;
+}
+.dashboard-error button, .dashboard-empty button {
+  padding: 0.8rem 1.8rem;
+  border-radius: 999px;
+  border: none;
+  background: #00a7e1;
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.dashboard-error button:hover, .dashboard-empty button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0.8rem 1.8rem rgba(0, 167, 225, 0.35);
+}
+.dashboard-empty {
+  color: rgba(0, 52, 89, 0.7);
+}
+.dashboard-emptyNotice {
+  margin-top: 1.5rem;
+  font-size: 1.3rem;
+  color: rgba(0, 52, 89, 0.65);
+  text-align: center;
+}
+
+.dataCard__actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 @media (max-width: 62em) {
@@ -592,10 +734,12 @@ body {
 }
 .adminInventory__controls {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   gap: 1.5rem;
   margin-bottom: 1.5rem;
+}
+.adminInventory__searchWrapper {
+  width: 100%;
 }
 .adminInventory__search {
   flex: 1;
@@ -612,6 +756,67 @@ body {
   border-color: rgba(0, 167, 225, 0.6);
   box-shadow: 0 0 0 3px rgba(0, 167, 225, 0.1);
 }
+.adminInventory__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: flex-end;
+}
+.adminInventory__filter, .adminInventory__filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.adminInventory__filter label, .adminInventory__filterGroup label {
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(0, 52, 89, 0.7);
+}
+.adminInventory__filter select,
+.adminInventory__filter input, .adminInventory__filterGroup select,
+.adminInventory__filterGroup input {
+  padding: 0.7rem 1rem;
+  border-radius: 0.8rem;
+  border: 1px solid rgba(0, 52, 89, 0.2);
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 1.3rem;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+.adminInventory__filter select:focus,
+.adminInventory__filter input:focus, .adminInventory__filterGroup select:focus,
+.adminInventory__filterGroup input:focus {
+  outline: none;
+  border-color: rgba(0, 167, 225, 0.6);
+  box-shadow: 0 0 0 3px rgba(0, 167, 225, 0.12);
+}
+.adminInventory__filterInputs {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.adminInventory__filterInputs span {
+  font-size: 1.2rem;
+  color: rgba(0, 52, 89, 0.5);
+}
+.adminInventory__filterReset {
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.8rem;
+  border: none;
+  background: rgba(0, 52, 89, 0.1);
+  color: #003459;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.adminInventory__filterReset:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.adminInventory__filterReset:not(:disabled):hover {
+  background: rgba(0, 52, 89, 0.15);
+  transform: translateY(-1px);
+}
 .adminInventory__table {
   width: 100%;
   border-collapse: collapse;
@@ -620,21 +825,25 @@ body {
 .adminInventory__table th,
 .adminInventory__table td {
   padding: clamp(1.1rem, 1.2vw, 1.6rem) clamp(1.3rem, 1.5vw, 2rem);
-  text-align: left;
   border-bottom: 1px solid rgba(0, 52, 89, 0.08);
 }
 .adminInventory__table th {
+  text-align: center;
   font-size: 1.3rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.15rem;
   color: rgba(0, 52, 89, 0.8);
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
 }
 .adminInventory__table th:hover {
   color: #003459;
   background: rgba(0, 167, 225, 0.1);
+}
+.adminInventory__table .adminInventory__tableHeader {
+  cursor: pointer;
 }
 .adminInventory__table tr:hover td {
   background: rgba(0, 167, 225, 0.08);
@@ -642,6 +851,141 @@ body {
 .adminInventory__table td {
   font-size: clamp(1.2rem, 1vw + 0.6rem, 1.4rem);
   color: #003459;
+  text-align: left;
+}
+.adminInventory__table tbody tr:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.96);
+}
+.adminInventory__table tbody tr:nth-child(even) {
+  background: rgba(0, 52, 89, 0.03);
+}
+.adminInventory__table tbody td:first-child {
+  white-space: nowrap;
+}
+.adminInventory__table tbody td:nth-child(1),
+.adminInventory__table tbody td:nth-child(4),
+.adminInventory__table tbody td:nth-child(5),
+.adminInventory__table tbody td:nth-child(6),
+.adminInventory__table tbody td:nth-child(7) {
+  text-align: center;
+}
+.adminInventory__tableRow {
+  transition: background 0.2s ease;
+}
+.adminInventory__tableRow--interactive {
+  cursor: pointer;
+}
+.adminInventory__tableRow--interactive:focus-visible td {
+  outline: 2px solid rgba(0, 167, 225, 0.6);
+  outline-offset: -4px;
+}
+.adminInventory__stockCell {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.adminInventory__stockIndicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 5rem;
+  padding: 0.4rem 1rem;
+  border-radius: 1rem;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+.adminInventory__stockIndicator--low {
+  background: rgba(231, 76, 60, 0.15);
+  color: #c0392b;
+}
+.adminInventory__stockIndicator--medium {
+  background: rgba(241, 196, 15, 0.18);
+  color: #b68700;
+}
+.adminInventory__stockIndicator--high {
+  background: rgba(46, 204, 113, 0.15);
+  color: #1e8a4d;
+}
+.adminInventory__restockBtn {
+  padding: 0.35rem 1.1rem;
+  border-radius: 999px;
+  border: none;
+  background: rgba(0, 167, 225, 0.15);
+  color: #00a7e1;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.adminInventory__restockBtn:hover {
+  background: rgba(0, 167, 225, 0.25);
+  transform: translateY(-1px);
+}
+.adminInventory__headerContent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+.adminInventory__sortIndicator {
+  font-size: 1.1rem;
+  color: #003459;
+}
+.adminInventory__tableFooter {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.2rem;
+}
+.adminInventory__paginationInfo {
+  font-size: 1.2rem;
+  color: rgba(0, 52, 89, 0.7);
+}
+.adminInventory__paginationControls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.adminInventory__pageSizeLabel {
+  font-size: 1.2rem;
+  color: rgba(0, 52, 89, 0.7);
+}
+.adminInventory__pageSizeSelect {
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.6rem;
+  border: 1px solid rgba(0, 52, 89, 0.2);
+  background: rgba(255, 255, 255, 0.9);
+}
+.adminInventory__pageButtons {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.adminInventory__pageButton {
+  padding: 0.4rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  background: rgba(0, 52, 89, 0.1);
+  color: #003459;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.adminInventory__pageButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.adminInventory__pageButton:not(:disabled):hover {
+  background: rgba(0, 52, 89, 0.2);
+  transform: translateY(-1px);
+}
+.adminInventory__pageStatus {
+  font-size: 1.2rem;
+  color: rgba(0, 52, 89, 0.75);
 }
 
 @media (min-width: 120em) {
@@ -673,6 +1017,7 @@ body {
   align-items: center;
   padding: 4rem clamp(2rem, 4vw, 5rem);
   background: rgba(0, 0, 0, 0.2);
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   pointer-events: none;
   opacity: 0;
@@ -761,11 +1106,45 @@ body {
   border-radius: 0.8rem;
   padding: 1rem 1.4rem;
 }
+.adminInventory_modal__hint {
+  grid-column: 1/-1;
+  font-size: 1.3rem;
+  color: rgba(0, 52, 89, 0.75);
+  background: rgba(0, 167, 225, 0.08);
+  border-radius: 0.8rem;
+  padding: 1rem 1.4rem;
+  margin-bottom: 0.5rem;
+}
+.adminInventory_modal__actionsWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2.4rem;
+  flex-wrap: wrap;
+}
+.adminInventory_modal__actionsLeft {
+  display: flex;
+  align-items: center;
+}
+.adminInventory_modal__actionsLeft button {
+  font-size: 1.3rem;
+  padding: 0.8rem 1.6rem;
+  border-radius: 1rem;
+  border: none;
+  cursor: pointer;
+  background: rgba(231, 76, 60, 0.16);
+  color: #c0392b;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.adminInventory_modal__actionsLeft button:hover {
+  background: rgba(231, 76, 60, 0.25);
+  transform: translateY(-1px);
+}
 .adminInventory_modal__actions {
   display: flex;
   justify-content: flex-end;
   gap: 1.2rem;
-  margin-top: 2.8rem;
 }
 .adminInventory_modal__actions button {
   font-size: 1.4rem;
@@ -1050,6 +1429,7 @@ body {
 .sm-logo {
   display: flex;
   align-items: center;
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -1146,8 +1526,8 @@ body {
   width: clamp(260px, 38vw, 420px);
   height: 100%;
   background: white;
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
   padding: 6em 2em 2em 2em;
@@ -1332,6 +1712,7 @@ body {
   color: var(--sm-accent, #5227ff);
   letter-spacing: 0;
   pointer-events: none;
+  -webkit-user-select: none;
   user-select: none;
   opacity: var(--sm-num-opacity, 0);
 }
@@ -1356,6 +1737,16 @@ body {
     filter: invert(100%);
   }
 }
+.lineGraph__container {
+  position: relative;
+  width: 100%;
+  min-height: 28rem;
+}
+.lineGraph__container canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 .login__background {
   position: fixed;
   top: 0;
@@ -1363,6 +1754,7 @@ body {
   width: 100%;
   height: 100%;
   background: rgba(0, 52, 89, 0.7); /* Dark transparent overlay */
+  -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
@@ -1513,6 +1905,7 @@ body {
   align-items: center;
   padding: 4rem clamp(2rem, 4vw, 5rem);
   background: rgba(0, 0, 0, 0.2);
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   pointer-events: none;
   opacity: 0;
@@ -1601,11 +1994,45 @@ body {
   border-radius: 0.8rem;
   padding: 1rem 1.4rem;
 }
+.adminInventory_modal__hint {
+  grid-column: 1/-1;
+  font-size: 1.3rem;
+  color: rgba(0, 52, 89, 0.75);
+  background: rgba(0, 167, 225, 0.08);
+  border-radius: 0.8rem;
+  padding: 1rem 1.4rem;
+  margin-bottom: 0.5rem;
+}
+.adminInventory_modal__actionsWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2.4rem;
+  flex-wrap: wrap;
+}
+.adminInventory_modal__actionsLeft {
+  display: flex;
+  align-items: center;
+}
+.adminInventory_modal__actionsLeft button {
+  font-size: 1.3rem;
+  padding: 0.8rem 1.6rem;
+  border-radius: 1rem;
+  border: none;
+  cursor: pointer;
+  background: rgba(231, 76, 60, 0.16);
+  color: #c0392b;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.adminInventory_modal__actionsLeft button:hover {
+  background: rgba(231, 76, 60, 0.25);
+  transform: translateY(-1px);
+}
 .adminInventory_modal__actions {
   display: flex;
   justify-content: flex-end;
   gap: 1.2rem;
-  margin-top: 2.8rem;
 }
 .adminInventory_modal__actions button {
   font-size: 1.4rem;

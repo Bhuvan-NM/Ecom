@@ -222,11 +222,23 @@ const Account = () => {
         <div className="account_card-contactInfo">
           <h3>Contact Info</h3>
           {isEditing && cardId === "Contact" ? (
-            <input
-              type="tel"
-              name="phoneNumber"
-              onChange={handleChange}
-            />
+            <div className="profile-input-Wrapper">
+              <label
+                htmlFor="phoneNumber"
+                className="profile-input-label"
+              >
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                id="phoneNumber"
+                name="phoneNumber"
+                className="profile-input"
+                placeholder="Phone Number"
+                onChange={handleChange}
+                value={formData.phoneNumber}
+              />
+            </div>
           ) : (
             <p className="account_card-contactInfo-PhoneNumber">
               Phone Number: {user?.phoneNumber}

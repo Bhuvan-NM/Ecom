@@ -6,6 +6,7 @@ import {
   getMonthlyRestockReport,
   getProfitReport,
   getSalesSummary,
+  getSalesMetrics,
 } from "../services/SalesReportGen.js";
 
 const router = express.Router();
@@ -51,6 +52,17 @@ router.get("/low-stock", async (req, res) => {
   } catch (err) {
     console.error("❌ Error generating low stock report:", err);
     res.status(500).json({ error: "Failed to generate low stock report" });
+  }
+});
+
+router.get("/sales-metrics", async (req, res) => {
+  try {
+    const range = typeof req.query.range === "string" ? req.query.range : "month";
+    const data = await getSalesMetrics(range);
+    res.json(data);
+  } catch (err) {
+    console.error("❌ Error generating sales metrics:", err);
+    res.status(500).json({ error: "Failed to generate sales metrics" });
   }
 });
 

@@ -6,6 +6,7 @@ dotenv.config({ path: "../.env" });
 
 const SAMPLE_SKU = "WM-1001";
 const SAMPLE_SKU2 = "WM-1002";
+const SAMPLE_SKU3 = "WM-1002";
 
 const seed = async () => {
   if (!process.env.MONGO_URI) {
@@ -25,11 +26,13 @@ const seed = async () => {
         category: "Electronics",
         price: 99.99,
         quantity: 50,
+        discount: 5,
         supplier: {
           name: "Gamer Supplies Co.",
           contact: "",
           costPerUnit: 50.0,
         },
+        lastRestocked: new Date(),
       },
       { new: true, upsert: true, setDefaultsOnInsert: true }
     );
@@ -41,11 +44,13 @@ const seed = async () => {
         category: "Electronics",
         price: 199.99,
         quantity: 50,
+        discount: 10,
         supplier: {
           name: "Gamer Supplies Co.",
           contact: "",
           costPerUnit: 100.0,
         },
+        lastRestocked: new Date(),
       },
       { new: true, upsert: true, setDefaultsOnInsert: true }
     );

@@ -8,6 +8,7 @@ const itemSchema = new mongoose.Schema({
   sku: { type: String, unique: true, required: true },
   category: { type: String, index: true },
   price: { type: Number, required: true },
+  discount: { type: Number, min: 0, default: 0 },
   quantity: { type: Number, required: true, default: 0 },
   supplier: {
     name: String,
@@ -20,6 +21,7 @@ const itemSchema = new mongoose.Schema({
     bin: String,
   },
   lastUpdated: { type: Date, default: Date.now },
+  lastRestocked: { type: Date },
 });
 
 export const Item = mongoose.model("Item", itemSchema);
@@ -131,14 +133,19 @@ restockSchema.post("save", async function (doc) {
     if (!doc.itemId || !doc.quantityAdded) return;
 
     const ItemModel = mongoose.model("Item");
-    await ItemModel.findByIdAndUpdate(
-      doc.itemId,
-      {
-        $inc: { quantity: doc.quantityAdded },
-        $set: { lastUpdated: new Date() },
-      },
-      { new: true }
-    );
+    const updates = {
+      $inc: { quantity: doc.quantityAdded },
+      $set: { lastUpdated: new Date(), lastRestocked: new Date() },
+    };
+
+    if (doc.costPerUnit !== undefined) {
+      updates.$set = {
+        ...updates.$set,
+        "supplier.costPerUnit": doc.costPerUnit,
+      };
+    }
+
+    await ItemModel.findByIdAndUpdate(doc.itemId, updates, { new: true });
 
     console.log(
       `✅ [Inventory] Increased stock for ${doc.sku} by +${doc.quantityAdded}`

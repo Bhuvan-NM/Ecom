@@ -10,6 +10,7 @@ import {
   Legend,
   ChartOptions,
   ChartData,
+  Filler,
 } from "chart.js";
 
 ChartJS.register(
@@ -19,20 +20,25 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
 interface LineGraphProps {
   data: ChartData<"line">;
   options?: ChartOptions<"line">;
+  className?: string;
 }
 
-const LineGraph: React.FC<LineGraphProps> = ({ data, options }) => {
+const LineGraph: React.FC<LineGraphProps> = ({ data, options, className }) => {
+  const containerClassName = ["lineGraph__container", className]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <Line
-      data={data}
-      options={options}
-    />
+    <div className={containerClassName}>
+      <Line data={data} options={options} />
+    </div>
   );
 };
 
