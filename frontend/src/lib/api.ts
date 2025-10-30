@@ -1,26 +1,24 @@
 import axios from "axios";
 
-const rawEnvBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
-const normalize = (value?: string) => (value ? value.replace(/\/$/, "") : undefined);
+const normalize = (value?: string) =>
+  value ? value.trim().replace(/\/$/, "") : undefined;
 
 const isBrowser = typeof window !== "undefined";
-const envBaseUrl = normalize(rawEnvBaseUrl);
-const isLocalEnvUrl = envBaseUrl?.startsWith("http://localhost");
+const envBaseUrl = normalize(import.meta.env.VITE_API_BASE_URL);
+const isDevelopment = import.meta.env.DEV;
 
-let resolvedBaseUrl = envBaseUrl;
+let baseURL = envBaseUrl;
 
-if (!resolvedBaseUrl || (!import.meta.env.DEV && isLocalEnvUrl)) {
-  if (isBrowser) {
-    resolvedBaseUrl = normalize(window.location.origin);
+if (!baseURL) {
+  if (isDevelopment) {
+    baseURL = "http://localhost:1337";
+  } else if (isBrowser) {
+    baseURL = normalize(window.location.origin);
   }
 }
 
-if (import.meta.env.DEV && isBrowser && window.location.hostname === "localhost") {
-  resolvedBaseUrl = "http://localhost:1337";
-}
-
 const api = axios.create({
-  baseURL: resolvedBaseUrl,
+  baseURL,
   withCredentials: true,
 });
 
