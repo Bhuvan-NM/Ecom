@@ -8,7 +8,7 @@ interface DataCardProps {
   icon?: React.ReactNode;
   color?: string;
   className?: string;
-  trend?: number;
+  trend?: number | null;
   trendLabel?: string;
   actions?: React.ReactNode;
   loading?: boolean;
