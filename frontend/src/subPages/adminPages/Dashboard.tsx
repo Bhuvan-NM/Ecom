@@ -2,6 +2,7 @@ import LineGraph from "../../components/LineGraph";
 import DataCard from "../../components/DataCard";
 import api from "../../lib/api";
 import { useState, useEffect } from "react";
+import AtomLoading from "../../assets/loading/AtomLodingIndicator";
 
 const Dashboard = () => {
   interface SalesSummary {
@@ -100,14 +101,10 @@ const Dashboard = () => {
     ],
   };
 
-  if (!salesData || typeof salesData.yearToDate !== "number") {
-    return <div>Error loading sales data.</div>;
-  }
-  if (!profitData) {
+  if (!salesData || typeof salesData.yearToDate !== "number" || !profitData) {
     return (
-      <div>
-        Loading dashboard data... Please wait while we fetch the latest
-        information.
+      <div className="dashboard-loading">
+        <AtomLoading size="large" />
       </div>
     );
   }

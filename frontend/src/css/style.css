@@ -37,6 +37,14 @@ body {
   }
 }
 
+.route-guard-loading {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
 body {
   font-family: "Oswald", sans-serif;
   font-weight: 400;
@@ -362,6 +370,15 @@ body {
   font-size: 2rem;
   color: #00a7e1;
   width: 70%;
+}
+.dashboard-loading {
+  width: 100%;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  --rli-color: $color-secondary;
 }
 .dashboard-dataCardContainer {
   display: flex;

@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
+import AtomLoading from "@/assets/loading/AtomLodingIndicator";
 
 interface RequireAdminProps {
   children: JSX.Element;
@@ -9,6 +10,14 @@ interface RequireAdminProps {
 const RequireAdmin: React.FC<RequireAdminProps> = ({ children }) => {
   const auth = useContext(AuthContext);
   const location = useLocation();
+
+  if (auth?.isLoading) {
+    return (
+      <div className="route-guard-loading">
+        <AtomLoading size="medium" />
+      </div>
+    );
+  }
 
   if (!auth?.user) {
     return <Navigate to="/" state={{ from: location }} replace />;

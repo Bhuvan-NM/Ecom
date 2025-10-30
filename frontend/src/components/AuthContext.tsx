@@ -13,6 +13,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  isLoading: boolean;
   login: (userData: User, token: string) => void;
   logout: () => void;
 }
@@ -23,6 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -38,6 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     if (!token) {
+      setIsLoading(false);
       return;
     }
 
@@ -45,6 +48,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     (async () => {
       try {
+        if (!token) {
+          return;
+        }
+
         const response = await api.get("/auth/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -59,6 +66,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           localStorage.removeItem("authToken");
           setUser(null);
         }
+      } finally {
+        if (isSubscribed) {
+          setIsLoading(false);
+        }
       }
     })();
 
@@ -71,16 +82,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("authToken", token);
     setUser(userData);
+    setIsLoading(false);
   };
 
   const logout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("authToken");
     setUser(null);
+    setIsLoading(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
