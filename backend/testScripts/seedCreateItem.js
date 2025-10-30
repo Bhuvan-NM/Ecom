@@ -23,12 +23,12 @@ const seed = async () => {
       {
         name: "Wireless Mouse",
         category: "Electronics",
-        price: 29.99,
+        price: 99.99,
         quantity: 50,
         supplier: {
           name: "Gamer Supplies Co.",
           contact: "",
-          costPerUnit: 10.0,
+          costPerUnit: 50.0,
         },
       },
       { new: true, upsert: true, setDefaultsOnInsert: true }
@@ -39,12 +39,12 @@ const seed = async () => {
       {
         name: "Gaming Mouse",
         category: "Electronics",
-        price: 299.99,
+        price: 199.99,
         quantity: 50,
         supplier: {
           name: "Gamer Supplies Co.",
           contact: "",
-          costPerUnit: 200.0,
+          costPerUnit: 100.0,
         },
       },
       { new: true, upsert: true, setDefaultsOnInsert: true }

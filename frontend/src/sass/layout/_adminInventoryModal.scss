@@ -1,0 +1,197 @@
+.adminInventory_modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem clamp(2rem, 4vw, 5rem);
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+
+  &--open {
+    pointer-events: auto;
+    opacity: 1;
+  }
+
+  &__content {
+    position: relative;
+    width: min(100%, 48rem);
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 2rem;
+    box-shadow: 0 -1.5rem 4rem rgba(0, 0, 0, 0.22);
+    padding: clamp(2.5rem, 2.5vw, 3.5rem) clamp(2rem, 2.2vw, 3rem) 3.5rem;
+    transform: translateY(4rem);
+    opacity: 0;
+    transition: transform 0.4s ease, opacity 0.35s ease;
+
+    .adminInventory_modal--open & {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  &__close {
+    position: absolute;
+    top: 1.4rem;
+    right: 1.6rem;
+    font-size: 2.2rem;
+    line-height: 1;
+    color: $color-tertiary;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+
+    &:hover {
+      color: $color-secondary;
+      transform: rotate(90deg);
+    }
+  }
+
+  &__title {
+    font-size: clamp(1.9rem, 1vw + 1rem, 2.6rem);
+    text-align: center;
+    font-weight: 600;
+    color: $color-tertiary;
+    margin-bottom: 2.4rem;
+    letter-spacing: 0.03em;
+  }
+
+  &__form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+    gap: 1.8rem;
+
+    &Group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      label {
+        font-size: 1.3rem;
+        font-weight: 500;
+        color: $color-tertiary;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 0.9rem 1.1rem;
+        border: 1px solid rgba($color-tertiary, 0.15);
+        border-radius: 0.8rem;
+        font-size: 1.4rem;
+        background: rgba($color-primary, 0.9);
+        transition: border 0.2s ease, box-shadow 0.2s ease;
+
+        &:focus {
+          outline: none;
+          border-color: rgba($color-secondary, 0.65);
+          box-shadow: 0 0 0 3px rgba($color-secondary, 0.15);
+        }
+      }
+    }
+  }
+
+  &__error {
+    grid-column: 1 / -1;
+    font-size: 1.3rem;
+    color: #c0392b;
+    background: rgba(#c0392b, 0.1);
+    border: 1px solid rgba(#c0392b, 0.15);
+    border-radius: 0.8rem;
+    padding: 1rem 1.4rem;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1.2rem;
+    margin-top: 2.8rem;
+
+    button {
+      font-size: 1.4rem;
+      padding: 0.9rem 2rem;
+      border-radius: 1rem;
+      border: none;
+      cursor: pointer;
+      transition: background 0.25s ease, transform 0.2s ease;
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
+
+    &-cancel {
+      background: rgba($color-tertiary, 0.1);
+      color: $color-tertiary;
+
+      &:hover {
+        background: rgba($color-tertiary, 0.15);
+      }
+    }
+
+    &-confirm {
+      background: $color-secondary;
+      color: $color-primary;
+
+      &:hover:not(:disabled) {
+        background: darken($color-secondary, 6%);
+      }
+
+      &:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  &__trigger {
+    position: fixed;
+    bottom: clamp(2rem, 3vw, 3.5rem);
+    right: clamp(2rem, 3vw, 3.5rem);
+    background: $color-secondary;
+    color: $color-primary;
+    width: clamp(4.6rem, 4vw, 5.4rem);
+    height: clamp(4.6rem, 4vw, 5.4rem);
+    border: none;
+    border-radius: 50%;
+    font-size: clamp(2rem, 1.5vw + 1rem, 2.6rem);
+    box-shadow: 0 1.8rem 3.6rem rgba(0, 0, 0, 0.22);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1600;
+    transition: background 0.3s ease, transform 0.3s ease;
+
+    &:hover {
+      background: darken($color-secondary, 5%);
+      transform: translateY(-4px);
+    }
+
+    &:active {
+      transform: scale(0.94);
+    }
+  }
+}
+
+@media (max-width: 56em) {
+  .adminInventory_modal {
+    align-items: center;
+
+    &__content {
+      border-radius: 1.6rem;
+      width: min(92vw, 44rem);
+    }
+  }
+}
+
+@media (max-width: 37.5em) {
+  .adminInventory_modal__form {
+    grid-template-columns: 1fr;
+  }
+}

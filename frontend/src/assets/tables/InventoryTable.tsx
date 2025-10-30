@@ -36,7 +36,11 @@ const columns = [
   }),
 ];
 
-const InventoryTable: React.FC = () => {
+interface InventoryTableProps {
+  refreshToken?: number;
+}
+
+const InventoryTable: React.FC<InventoryTableProps> = ({ refreshToken = 0 }) => {
   const [data, setData] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -46,6 +50,7 @@ const InventoryTable: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         setError(null);
         const res = await api.get("/api/inventory", {
@@ -60,7 +65,7 @@ const InventoryTable: React.FC = () => {
       }
     };
     fetchData();
-  }, [search, sort, order]);
+  }, [search, sort, order, refreshToken]);
 
   const table = useReactTable({
     data,

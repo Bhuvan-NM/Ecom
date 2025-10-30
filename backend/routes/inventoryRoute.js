@@ -55,6 +55,12 @@ router.post("/inventory", async (req, res) => {
     await newItem.save();
     res.status(201).json(newItem);
   } catch (error) {
+    if (error?.code === 11000) {
+      return res
+        .status(409)
+        .json({ message: "An item with this SKU already exists." });
+    }
+
     res
       .status(500)
       .json({ message: "Failed to save item", error: error.message });
