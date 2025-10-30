@@ -10,23 +10,33 @@ const RANGE_OPTIONS = [
   { value: "week", label: "Week" },
   { value: "month", label: "Month" },
   { value: "ytd", label: "Year to Date" },
+  { value: "all", label: "All Time" },
 ] as const;
 
-const RANGE_DESCRIPTIONS: Record<string, string> = {
-  day: "previous day",
-  week: "previous week",
-  month: "previous month",
-  ytd: "previous year",
-};
+type RangeValue = (typeof RANGE_OPTIONS)[number]["value"];
 
 const RANGE_TITLES: Record<string, string> = {
   day: "Last 24 Hours",
   week: "Last 7 Days",
   month: "Last 30 Days",
   ytd: "Year to Date",
+  all: "All Time",
 };
 
-type RangeValue = (typeof RANGE_OPTIONS)[number]["value"];
+const RANGE_SUMMARY_TEXT: Record<RangeValue, string> = {
+  day: "in the last 24 hours",
+  week: "in the last 7 days",
+  month: "in the last month",
+  ytd: "so far this year",
+  all: "across all time",
+};
+
+const RANGE_COMPARISON_TEXT: Partial<Record<RangeValue, string>> = {
+  day: "vs previous day",
+  week: "vs previous week",
+  month: "vs previous month",
+  ytd: "vs previous year",
+};
 
 type SalesMetricSeries = {
   label: string;
@@ -39,9 +49,9 @@ type SalesMetrics = {
   totalRevenue: number;
   totalOrders: number;
   averageOrderValue: number;
-  revenueChangePct: number;
-  ordersChangePct: number;
-  averageOrderValueChangePct: number;
+  revenueChangePct: number | null;
+  ordersChangePct: number | null;
+  averageOrderValueChangePct: number | null;
   series: SalesMetricSeries[];
 };
 
@@ -52,6 +62,7 @@ const createRangeState = <T,>(value: T): Record<RangeValue, T> => ({
   week: value,
   month: value,
   ytd: value,
+  all: value,
 });
 
 const toMetricNumber = (value: unknown) => {
@@ -59,20 +70,12 @@ const toMetricNumber = (value: unknown) => {
   return Number.isFinite(numeric) ? numeric : 0;
 };
 
-const getTrendDescription = (
-  trend: number | undefined,
-  comparisonLabel: string
-) => {
-  if (trend === undefined || Number.isNaN(trend)) {
-    return `vs ${comparisonLabel}`;
+const toOptionalMetricNumber = (value: unknown) => {
+  if (value == null) {
+    return null;
   }
-  if (trend > 0) {
-    return `Higher than ${comparisonLabel}`;
-  }
-  if (trend < 0) {
-    return `Lower than ${comparisonLabel}`;
-  }
-  return `No change vs ${comparisonLabel}`;
+  const numeric = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(numeric) ? numeric : null;
 };
 
 interface RangeMenuProps {
@@ -201,9 +204,9 @@ const Dashboard = () => {
           totalRevenue: toMetricNumber(payload.totalRevenue),
           totalOrders: Math.round(toMetricNumber(payload.totalOrders)),
           averageOrderValue: toMetricNumber(payload.averageOrderValue),
-          revenueChangePct: toMetricNumber(payload.revenueChangePct),
-          ordersChangePct: toMetricNumber(payload.ordersChangePct),
-          averageOrderValueChangePct: toMetricNumber(
+          revenueChangePct: toOptionalMetricNumber(payload.revenueChangePct),
+          ordersChangePct: toOptionalMetricNumber(payload.ordersChangePct),
+          averageOrderValueChangePct: toOptionalMetricNumber(
             payload.averageOrderValueChangePct
           ),
           series: Array.isArray(payload.series)
@@ -407,24 +410,19 @@ const Dashboard = () => {
   const aovLoading = loadingByRange[aovRange];
   const aovError = errorByRange[aovRange];
 
-  const revenueComparison =
-    RANGE_DESCRIPTIONS[revenueRange] ?? "previous period";
-  const ordersComparison =
-    RANGE_DESCRIPTIONS[ordersRange] ?? "previous period";
-  const aovComparison = RANGE_DESCRIPTIONS[aovRange] ?? "previous period";
+  const revenueDescription =
+    revenueError ?? RANGE_SUMMARY_TEXT[revenueRange] ?? "recently";
+  const ordersDescription =
+    ordersError ?? RANGE_SUMMARY_TEXT[ordersRange] ?? "recently";
+  const aovDescription =
+    aovError ?? RANGE_SUMMARY_TEXT[aovRange] ?? "recently";
 
-  const revenueDescription = revenueError
-    ? revenueError
-    : getTrendDescription(revenueMetrics?.revenueChangePct, revenueComparison);
-  const ordersDescription = ordersError
-    ? ordersError
-    : getTrendDescription(ordersMetrics?.ordersChangePct, ordersComparison);
-  const aovDescription = aovError
-    ? aovError
-    : getTrendDescription(
-        aovMetrics?.averageOrderValueChangePct,
-        aovComparison
-      );
+  const revenueTrendLabel =
+    revenueError ? undefined : RANGE_COMPARISON_TEXT[revenueRange];
+  const ordersTrendLabel =
+    ordersError ? undefined : RANGE_COMPARISON_TEXT[ordersRange];
+  const aovTrendLabel =
+    aovError ? undefined : RANGE_COMPARISON_TEXT[aovRange];
 
   const isSeriesEmpty =
     !graphMetrics.series || graphMetrics.series.length === 0;
@@ -440,6 +438,7 @@ const Dashboard = () => {
               : "--"
           }
           description={revenueDescription}
+          trendLabel={revenueTrendLabel}
           trend={revenueError ? undefined : revenueMetrics?.revenueChangePct}
           color="bg-green-100"
           className="dashboard-dataCard"
@@ -460,6 +459,7 @@ const Dashboard = () => {
             ordersMetrics ? ordersMetrics.totalOrders.toLocaleString() : "--"
           }
           description={ordersDescription}
+          trendLabel={ordersTrendLabel}
           trend={ordersError ? undefined : ordersMetrics?.ordersChangePct}
           color="bg-blue-100"
           className="dashboard-dataCard"
@@ -482,6 +482,7 @@ const Dashboard = () => {
               : "--"
           }
           description={aovDescription}
+          trendLabel={aovTrendLabel}
           trend={
             aovError ? undefined : aovMetrics?.averageOrderValueChangePct
           }

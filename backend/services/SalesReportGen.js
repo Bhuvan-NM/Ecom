@@ -171,6 +171,12 @@ const RANGE_CONFIG = {
     unit: "month",
     format: "%Y-%m",
   },
+  all: {
+    label: "all",
+    window: null,
+    unit: "month",
+    format: "%Y-%m",
+  },
 };
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -186,12 +192,23 @@ function getRangeBounds(rangeKey = "month") {
     return { start, end: now, prevStart, prevEnd, unit: config.unit, format: config.format };
   }
 
-const windowMs = (config.window ?? 30) * MS_PER_DAY;
-const start = new Date(now.getTime() - windowMs + 1);
-const prevEnd = new Date(start.getTime());
-const prevStart = new Date(prevEnd.getTime() - windowMs);
+  if (rangeKey === "all") {
+    return {
+      start: new Date(0),
+      end: now,
+      prevStart: null,
+      prevEnd: null,
+      unit: config.unit,
+      format: config.format,
+    };
+  }
 
-return { start, end: now, prevStart, prevEnd, unit: config.unit, format: config.format };
+  const windowMs = (config.window ?? 30) * MS_PER_DAY;
+  const start = new Date(now.getTime() - windowMs + 1);
+  const prevEnd = new Date(start.getTime());
+  const prevStart = new Date(prevEnd.getTime() - windowMs);
+
+  return { start, end: now, prevStart, prevEnd, unit: config.unit, format: config.format };
 }
 
 const NUMERIC_TYPES = ["double", "int", "long", "decimal"];
@@ -365,15 +382,27 @@ const buildNormalizationStages = () => [
   },
 ];
 
-const buildMatchStage = (rangeStart, rangeEnd, inclusiveEnd = true) => ({
-  $match: {
+const buildMatchStage = (rangeStart, rangeEnd, inclusiveEnd = true) => {
+  if (!rangeStart && !rangeEnd) {
+    return null;
+  }
+
+  const match = {
     saleDateNormalized: {
       $ne: null,
-      $gte: rangeStart,
-      [inclusiveEnd ? "$lte" : "$lt"]: rangeEnd,
     },
-  },
-});
+  };
+
+  if (rangeStart) {
+    match.saleDateNormalized.$gte = rangeStart;
+  }
+
+  if (rangeEnd) {
+    match.saleDateNormalized[inclusiveEnd ? "$lte" : "$lt"] = rangeEnd;
+  }
+
+  return { $match: match };
+};
 
 export async function getSalesMetrics(range = "month") {
   try {
@@ -395,9 +424,15 @@ export async function getSalesMetrics(range = "month") {
       },
     };
 
-    const seriesRaw = await Sale.aggregate([
-      ...buildNormalizationStages(),
-      buildMatchStage(start, end, true),
+    const normalizationStages = buildNormalizationStages();
+    const currentMatchStage = buildMatchStage(start, end, true);
+    const previousMatchStage = buildMatchStage(prevStart, prevEnd, false);
+
+    const seriesPipeline = [...normalizationStages];
+    if (currentMatchStage) {
+      seriesPipeline.push(currentMatchStage);
+    }
+    seriesPipeline.push(
       groupStage,
       { $sort: { "_id.label": 1 } },
       {
@@ -407,32 +442,35 @@ export async function getSalesMetrics(range = "month") {
           revenue: 1,
           orders: 1,
         },
-      },
-    ]);
+      }
+    );
 
-    const totalsRaw = await Sale.aggregate([
-      ...buildNormalizationStages(),
-      buildMatchStage(start, end, true),
-      {
+    const totalsPipeline = [...normalizationStages];
+    if (currentMatchStage) {
+      totalsPipeline.push(currentMatchStage);
+    }
+    totalsPipeline.push({
+      $group: {
+        _id: null,
+        revenue: { $sum: "$revenueAmount" },
+        orders: { $sum: 1 },
+      },
+    });
+
+    const seriesRaw = await Sale.aggregate(seriesPipeline);
+    const totalsRaw = await Sale.aggregate(totalsPipeline);
+
+    let previousTotalsRaw = [];
+    if (previousMatchStage) {
+      const previousPipeline = [...normalizationStages, previousMatchStage, {
         $group: {
           _id: null,
           revenue: { $sum: "$revenueAmount" },
           orders: { $sum: 1 },
         },
-      },
-    ]);
-
-    const previousTotalsRaw = await Sale.aggregate([
-      ...buildNormalizationStages(),
-      buildMatchStage(prevStart, prevEnd, false),
-      {
-        $group: {
-          _id: null,
-          revenue: { $sum: "$revenueAmount" },
-          orders: { $sum: 1 },
-        },
-      },
-    ]);
+      }];
+      previousTotalsRaw = await Sale.aggregate(previousPipeline);
+    }
 
     const series = seriesRaw.map((entry) => ({
       label: entry.label,
@@ -447,27 +485,31 @@ export async function getSalesMetrics(range = "month") {
 
     const totalRevenueRounded = Number(totalRevenue.toFixed(2));
     const previousRevenueRounded = Number(previousRevenue.toFixed(2));
-    const revenueChangePct = calculateChangePct(
-      totalRevenueRounded,
-      previousRevenueRounded
-    );
+    const hasPreviousRevenue = previousTotalsRaw.length > 0;
+    const revenueChangePct = hasPreviousRevenue
+      ? calculateChangePct(totalRevenueRounded, previousRevenueRounded)
+      : null;
 
-    const ordersChangePct = calculateChangePct(totalOrders, previousOrders);
+    const hasPreviousOrders = previousTotalsRaw.length > 0;
+    const ordersChangePct = hasPreviousOrders
+      ? calculateChangePct(totalOrders, previousOrders)
+      : null;
 
     const averageOrderValueRaw = totalOrders
       ? totalRevenueRounded / totalOrders
       : 0;
     const averageOrderValue = Number(averageOrderValueRaw.toFixed(2));
-    const previousAverageOrderValueRaw = previousOrders
-      ? previousRevenueRounded / previousOrders
-      : 0;
-    const previousAverageOrderValue = Number(
-      previousAverageOrderValueRaw.toFixed(2)
-    );
-    const averageOrderValueChangePct = calculateChangePct(
-      averageOrderValue,
-      previousAverageOrderValue
-    );
+    let averageOrderValueChangePct = null;
+    if (previousOrders > 0) {
+      const previousAverageOrderValueRaw = previousRevenueRounded / previousOrders;
+      const previousAverageOrderValue = Number(
+        previousAverageOrderValueRaw.toFixed(2)
+      );
+      averageOrderValueChangePct = calculateChangePct(
+        averageOrderValue,
+        previousAverageOrderValue
+      );
+    }
 
     return {
       range,

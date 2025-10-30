@@ -73,22 +73,13 @@ const DataCard: React.FC<DataCardProps> = ({
     .filter(Boolean)
     .join(" ");
 
-  const trendColor =
-    trend === undefined
-      ? "text-gray-400"
-      : trend > 0
-      ? "text-emerald-600"
-      : trend < 0
-      ? "text-rose-600"
-      : "text-gray-500";
-
   const formattedTrend =
-    trend === undefined
+    trend == null
       ? null
       : `${trend > 0 ? "+" : ""}${Math.abs(trend).toFixed(1)}%`;
 
   const trendDirection: TrendDirection =
-    trend === undefined
+    trend == null
       ? "flat"
       : trend > 0
       ? "up"
@@ -96,9 +87,20 @@ const DataCard: React.FC<DataCardProps> = ({
       ? "down"
       : "flat";
 
+  const trendBadgeClass =
+    trendDirection === "up"
+      ? "bg-emerald-100 text-emerald-700"
+      : trendDirection === "down"
+      ? "bg-rose-100 text-rose-700"
+      : "bg-gray-100 text-gray-500";
+
   return (
     <div className={rootClassName}>
-      {actions && <div className="dataCard__actions absolute top-3 right-3">{actions}</div>}
+      {actions && (
+        <div className="dataCard__actions absolute top-3 right-3">
+          {actions}
+        </div>
+      )}
       <div className="flex flex-col gap-1 pr-6">
         <h3 className="text-sm text-gray-500 font-medium uppercase tracking-wide">
           {title}
@@ -106,21 +108,31 @@ const DataCard: React.FC<DataCardProps> = ({
         <p className="text-2xl font-bold text-gray-900">
           {loading ? "--" : value}
         </p>
-        {(description || formattedTrend) && (
-          <p className="text-xs text-gray-500 flex items-center gap-2 leading-5">
+        {(description || formattedTrend || trendLabel) && (
+          <div className="flex items-center gap-3 text-xs leading-5 text-gray-500">
             {formattedTrend && (
               <span
-                className={`inline-flex items-center gap-1 font-semibold ${trendColor}`}
+                className={`inline-flex items-center gap-1 rounded-full px-2 py-1 font-semibold ${trendBadgeClass}`}
               >
                 <TrendArrow direction={trendDirection} />
                 {formattedTrend}
               </span>
             )}
-            {description && <span>{description}</span>}
-            {trendLabel && (
-              <span className="text-gray-400">{trendLabel}</span>
+            {(trendLabel || description) && (
+              <div className="flex flex-col leading-tight">
+                {trendLabel && (
+                  <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                    {trendLabel}
+                  </span>
+                )}
+                {description && (
+                  <span className="text-xs font-medium text-gray-600">
+                    {description}
+                  </span>
+                )}
+              </div>
             )}
-          </p>
+          </div>
         )}
       </div>
       {icon && <div className="text-gray-400 text-3xl ml-auto">{icon}</div>}

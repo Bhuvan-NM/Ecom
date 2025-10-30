@@ -1,5 +1,4 @@
 import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
-import api from "../../lib/api";
 import {
   useReactTable,
   getCoreRowModel,
@@ -8,6 +7,8 @@ import {
   flexRender,
   createColumnHelper,
 } from "@tanstack/react-table";
+import api from "../../lib/api";
+import AtomLoading from "../../assets/loading/AtomLodingIndicator";
 
 type Item = {
   _id: string;
@@ -30,8 +31,8 @@ export type InventoryItem = Item;
 
 const columnHelper = createColumnHelper<Item>();
 
-const LOW_STOCK_THRESHOLD = 10;
-const MEDIUM_STOCK_THRESHOLD = 30;
+const LOW_STOCK_THRESHOLD = 100;
+const MEDIUM_STOCK_THRESHOLD = 200;
 
 type FilterState = {
   search: string;
@@ -70,7 +71,7 @@ const formatDate = (value?: string | Date | null) => {
 };
 
 const getStockLevel = (quantity: number) => {
-  if (quantity <= LOW_STOCK_THRESHOLD) return "low";
+  if (quantity < LOW_STOCK_THRESHOLD) return "low";
   if (quantity <= MEDIUM_STOCK_THRESHOLD) return "medium";
   return "high";
 };
@@ -389,7 +390,13 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  if (loading) return <p>Loading inventory...</p>;
+  if (loading) {
+    return (
+      <div className="adminInventory__loading">
+        <AtomLoading size="large" />
+      </div>
+    );
+  }
 
   if (error) {
     return <p className="adminInventory__error">{error}</p>;
@@ -428,12 +435,13 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
         </div>
 
         <div className="adminInventory__filters">
-          <div className="adminInventory__filter">
+          <div className="adminInventory__filter adminInventory__filter--category">
             <label htmlFor="inventory-filter-category">Category</label>
             <select
               id="inventory-filter-category"
               value={filterDraft.category}
               onChange={handleCategoryChange}
+              className="adminInventory__categorySelect"
             >
               {categorySelectOptions.map((option) => (
                 <option
@@ -567,7 +575,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
               onClick={() => onRowClick?.(row.original)}
               tabIndex={onRowClick ? 0 : undefined}
               aria-label={
-                onRowClick ? `View item ${row.original.name ?? row.original.sku}` : undefined
+                onRowClick
+                  ? `View item ${row.original.name ?? row.original.sku}`
+                  : undefined
               }
               onKeyDown={(event) => {
                 if (!onRowClick) return;

@@ -224,9 +224,11 @@
 
   &__stockCell {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+    text-align: center;
   }
 
   &__stockIndicator {
@@ -240,26 +242,29 @@
     font-size: 1.2rem;
 
     &--low {
-      background: rgba(#e74c3c, 0.15);
-      color: #c0392b;
+      background: rgba(#ef4444, 0.12);
+      color: #b91c1c;
+      box-shadow: inset 0 0 0 1px rgba(#ef4444, 0.35);
     }
 
     &--medium {
-      background: rgba(#f1c40f, 0.18);
-      color: #b68700;
+      background: rgba(#f97316, 0.12);
+      color: #c2410c;
+      box-shadow: inset 0 0 0 1px rgba(#f97316, 0.35);
     }
 
     &--high {
-      background: rgba(#2ecc71, 0.15);
-      color: #1e8a4d;
+      background: rgba(#22c55e, 0.12);
+      color: #15803d;
+      box-shadow: inset 0 0 0 1px rgba(#22c55e, 0.35);
     }
   }
 
   &__restockBtn {
-    padding: 0.35rem 1.1rem;
+    padding: 0.45rem 1.4rem;
     border-radius: 999px;
     border: none;
-    background: rgba($color-secondary, 0.15);
+    background: rgba($color-secondary, 0.18);
     color: $color-secondary;
     font-size: 1.1rem;
     font-weight: 600;
@@ -268,7 +273,7 @@
     transition: background 0.2s ease, transform 0.2s ease;
 
     &:hover {
-      background: rgba($color-secondary, 0.25);
+      background: rgba($color-secondary, 0.28);
       transform: translateY(-1px);
     }
   }
@@ -348,6 +353,55 @@
     font-size: 1.2rem;
     color: rgba($color-tertiary, 0.75);
   }
+}
+
+.adminInventory__filter--category {
+  position: relative;
+
+  .adminInventory__categorySelect {
+    appearance: none;
+    padding: 0.9rem 3.2rem 0.9rem 1.2rem;
+    border-radius: 999px;
+    border: 1px solid rgba($color-tertiary, 0.2);
+    background: linear-gradient(
+        135deg,
+        rgba($color-secondary, 0.1),
+        rgba($color-secondary, 0.02)
+      ),
+      rgba($color-primary, 0.92);
+    font-weight: 600;
+    color: $color-tertiary;
+    box-shadow: inset 0 0 0 1px rgba($color-tertiary, 0.05);
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: rgba($color-secondary, 0.7);
+      box-shadow: 0 0 0 3px rgba($color-secondary, 0.12);
+    }
+  }
+
+  &::after {
+    content: "▾";
+    position: absolute;
+    right: 1.4rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: rgba($color-tertiary, 0.6);
+    font-size: 1.2rem;
+  }
+}
+
+.adminInventory__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28rem;
+  width: 100%;
+  background: rgba($color-primary, 0.85);
+  border-radius: 1.5rem;
+  box-shadow: inset 0 0 0 1px rgba($color-tertiary, 0.06);
 }
 
 @media (min-width: 120em) {

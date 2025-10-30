@@ -881,9 +881,11 @@ body {
 }
 .adminInventory__stockCell {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+  text-align: center;
 }
 .adminInventory__stockIndicator {
   display: inline-flex;
@@ -896,22 +898,25 @@ body {
   font-size: 1.2rem;
 }
 .adminInventory__stockIndicator--low {
-  background: rgba(231, 76, 60, 0.15);
-  color: #c0392b;
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+  box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.35);
 }
 .adminInventory__stockIndicator--medium {
-  background: rgba(241, 196, 15, 0.18);
-  color: #b68700;
+  background: rgba(249, 115, 22, 0.12);
+  color: #c2410c;
+  box-shadow: inset 0 0 0 1px rgba(249, 115, 22, 0.35);
 }
 .adminInventory__stockIndicator--high {
-  background: rgba(46, 204, 113, 0.15);
-  color: #1e8a4d;
+  background: rgba(34, 197, 94, 0.12);
+  color: #15803d;
+  box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.35);
 }
 .adminInventory__restockBtn {
-  padding: 0.35rem 1.1rem;
+  padding: 0.45rem 1.4rem;
   border-radius: 999px;
   border: none;
-  background: rgba(0, 167, 225, 0.15);
+  background: rgba(0, 167, 225, 0.18);
   color: #00a7e1;
   font-size: 1.1rem;
   font-weight: 600;
@@ -920,7 +925,7 @@ body {
   transition: background 0.2s ease, transform 0.2s ease;
 }
 .adminInventory__restockBtn:hover {
-  background: rgba(0, 167, 225, 0.25);
+  background: rgba(0, 167, 225, 0.28);
   transform: translateY(-1px);
 }
 .adminInventory__headerContent {
@@ -986,6 +991,47 @@ body {
 .adminInventory__pageStatus {
   font-size: 1.2rem;
   color: rgba(0, 52, 89, 0.75);
+}
+
+.adminInventory__filter--category {
+  position: relative;
+}
+.adminInventory__filter--category .adminInventory__categorySelect {
+  appearance: none;
+  padding: 0.9rem 3.2rem 0.9rem 1.2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 52, 89, 0.2);
+  background: linear-gradient(135deg, rgba(0, 167, 225, 0.1), rgba(0, 167, 225, 0.02)), rgba(255, 255, 255, 0.92);
+  font-weight: 600;
+  color: #003459;
+  box-shadow: inset 0 0 0 1px rgba(0, 52, 89, 0.05);
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+.adminInventory__filter--category .adminInventory__categorySelect:focus {
+  outline: none;
+  border-color: rgba(0, 167, 225, 0.7);
+  box-shadow: 0 0 0 3px rgba(0, 167, 225, 0.12);
+}
+.adminInventory__filter--category::after {
+  content: "▾";
+  position: absolute;
+  right: 1.4rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: rgba(0, 52, 89, 0.6);
+  font-size: 1.2rem;
+}
+
+.adminInventory__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28rem;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 1.5rem;
+  box-shadow: inset 0 0 0 1px rgba(0, 52, 89, 0.06);
 }
 
 @media (min-width: 120em) {
