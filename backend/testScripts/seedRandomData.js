@@ -4,11 +4,11 @@ import { Item, Sale } from "../models/InventoryItem.js";
 
 dotenv.config({ path: "../.env" });
 
-const ITEM_COUNT = Number(process.env.SEED_ITEM_COUNT ?? 80);
-const SALE_COUNT = Number(process.env.SEED_SALE_COUNT ?? 600);
+const ITEM_COUNT = Number(process.env.SEED_ITEM_COUNT ?? 200);
+const SALE_COUNT = Number(process.env.SEED_SALE_COUNT ?? 6000);
 
 const ITEM_SKU_PREFIX = "SIM-";
-const DATE_RANGE_YEARS = 2;
+const DATE_RANGE_YEARS = 4;
 
 const categories = [
   "Electronics",
@@ -83,7 +83,9 @@ const buildItemPayload = (index) => {
   const category = randomFrom(categories);
   const basePrice = randomFloat(25, 799, 2);
   const discount =
-    Math.random() < 0.25 ? randomFloat(5, 30, 1) : Number((Math.random() < 0.1 ? randomFloat(30, 55, 1) : 0).toFixed(1));
+    Math.random() < 0.25
+      ? randomFloat(5, 30, 1)
+      : Number((Math.random() < 0.1 ? randomFloat(30, 55, 1) : 0).toFixed(1));
   const quantity = randomInt(250, 1200);
   const costPerUnit = Number((basePrice * randomFloat(0.35, 0.65)).toFixed(2));
   const lastRestocked = randomDateWithinYears(DATE_RANGE_YEARS);
@@ -107,7 +109,10 @@ const buildItemPayload = (index) => {
 
 const createSalePayload = (item) => {
   const saleDate = randomDateWithinYears(DATE_RANGE_YEARS);
-  const quantitySold = randomInt(1, Math.min(8, Math.max(1, item.quantity / 4)));
+  const quantitySold = randomInt(
+    1,
+    Math.min(8, Math.max(1, item.quantity / 4))
+  );
   const salePrice = Number(item.price.toFixed(2));
   const total = Number((salePrice * quantitySold).toFixed(2));
   const paymentMethod = randomFrom(paymentMethods);
@@ -142,10 +147,6 @@ const seed = async () => {
   });
 
   try {
-    console.log("🧹 Clearing previous simulated data…");
-    await Sale.deleteMany({ sku: { $regex: `^${ITEM_SKU_PREFIX}` } });
-    await Item.deleteMany({ sku: { $regex: `^${ITEM_SKU_PREFIX}` } });
-
     console.log(`📦 Generating ${ITEM_COUNT} items…`);
     const itemPayloads = Array.from({ length: ITEM_COUNT }, (_, idx) =>
       buildItemPayload(idx)
@@ -154,7 +155,9 @@ const seed = async () => {
       ordered: false,
     });
 
-    console.log(`🧾 Generating ${SALE_COUNT} sales across ${DATE_RANGE_YEARS} years…`);
+    console.log(
+      `🧾 Generating ${SALE_COUNT} sales across ${DATE_RANGE_YEARS} years…`
+    );
     const salesPayloads = Array.from({ length: SALE_COUNT }, () => {
       const item = randomFrom(createdItems);
       return createSalePayload(item);

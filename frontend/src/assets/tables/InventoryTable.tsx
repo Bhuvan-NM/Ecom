@@ -1,4 +1,10 @@
-import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -87,8 +93,10 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
   onRowClick,
   onRestockClick,
 }) => {
-  const [allItems, setAllItems] = useState<Item[]>([]);
-  const [data, setData] = useState<Item[]>([]);
+  const [rows, setRows] = useState<Item[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filterDraft, setFilterDraft] = useState<FilterState>(() =>
@@ -100,28 +108,77 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
   const [sort, setSort] = useState("name");
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [pageSize, setPageSize] = useState(10);
-  const [pageIndex, setPageIndex] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
+  const [pageIndex, setPageIndex] = useState(0);
+
+  const fetchInventory = useCallback(async () => {
+    setLoading(true);
+    try {
+      setError(null);
+
+      const params: Record<string, string | number> = {
+        page: pageIndex + 1,
+        limit: pageSize,
+        sort,
+        order,
+      };
+
+      const { search, category, priceMin, priceMax, dateFrom, dateTo } =
+        appliedFilters;
+
+      if (search) params.search = search;
+      if (category && category !== "all") params.category = category;
+      if (priceMin) params.priceMin = priceMin;
+      if (priceMax) params.priceMax = priceMax;
+      if (dateFrom) params.dateFrom = dateFrom;
+      if (dateTo) params.dateTo = dateTo;
+
+      const res = await api.get("/api/inventory", { params });
+      const items: Item[] = Array.isArray(res.data?.items)
+        ? res.data.items
+        : [];
+      const nextTotalCount = Number(res.data?.totalCount ?? items.length);
+      const rawTotalPages = Number(res.data?.totalPages);
+      const computedTotalPages =
+        Number.isFinite(rawTotalPages) && rawTotalPages > 0
+          ? rawTotalPages
+          : nextTotalCount === 0
+          ? 1
+          : Math.max(Math.ceil(nextTotalCount / pageSize), 1);
+
+      if (computedTotalPages > 0 && pageIndex + 1 > computedTotalPages) {
+        setTotalCount(nextTotalCount);
+        setTotalPages(computedTotalPages);
+        setAvailableCategories(res.data?.categories ?? []);
+        setRows(items);
+        setPageIndex(Math.max(computedTotalPages - 1, 0));
+        return;
+      }
+
+      setRows(items);
+      setTotalCount(nextTotalCount);
+      setTotalPages(computedTotalPages);
+      setAvailableCategories(res.data?.categories ?? []);
+    } catch (err) {
+      console.error("❌ Error fetching inventory:", err);
+      setError("Unable to load inventory. Please try again later.");
+      setRows([]);
+      setTotalCount(0);
+      setTotalPages(1);
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    appliedFilters,
+    order,
+    pageIndex,
+    pageSize,
+    sort,
+    refreshToken,
+  ]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        setError(null);
-        const res = await api.get("/api/inventory");
-        const items = res.data?.items ?? [];
-        setAllItems(items);
-      } catch (err) {
-        console.error("❌ Error fetching inventory:", err);
-        setError("Unable to load inventory. Please try again later.");
-        setAllItems([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [refreshToken]);
+    fetchInventory();
+  }, [fetchInventory]);
 
   const handleSortClick = (columnId: string) => {
     if (sort === columnId) {
@@ -130,6 +187,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
       setSort(columnId);
       setOrder("asc");
     }
+    setPageIndex(0);
   };
 
   const handleCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -151,33 +209,25 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     const defaults = createDefaultFilters();
     setFilterDraft(defaults);
     setAppliedFilters(defaults);
-    setPageIndex(1);
+    setPageIndex(0);
   };
 
   const handlePageSizeChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const nextSize = Number(event.target.value) || 10;
     setPageSize(nextSize);
-    setPageIndex(1);
+    setPageIndex(0);
   };
 
   const handlePrevPage = () => {
-    setPageIndex((prev) => Math.max(prev - 1, 1));
+    setPageIndex((prev) => Math.max(prev - 1, 0));
   };
 
   const handleNextPage = () => {
-    setPageIndex((prev) => Math.min(prev + 1, totalPages));
+    setPageIndex((prev) => {
+      const maxIndex = Math.max(totalPages - 1, 0);
+      return Math.min(prev + 1, maxIndex);
+    });
   };
-
-  const categorySelectOptions = useMemo(() => {
-    const categories = Array.from(
-      new Set(
-        allItems
-          .map((item) => item.category)
-          .filter((category): category is string => Boolean(category))
-      )
-    ).sort((a, b) => a.localeCompare(b));
-    return ["all", ...categories];
-  }, [allItems]);
 
   const normalizedDraft = useMemo(
     () => normalizeFilters(filterDraft),
@@ -205,7 +255,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     const nextFilters = normalizeFilters(filterDraft);
     setFilterDraft(nextFilters);
     setAppliedFilters(nextFilters);
-    setPageIndex(1);
+    setPageIndex(0);
   };
 
   const handleFilterButtonClick = () => {
@@ -216,108 +266,35 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     }
   };
 
-  useEffect(() => {
-    const normalizedSearch = appliedFilters.search.toLowerCase();
-    const filtered = allItems.filter((item) => {
-      const matchesSearch =
-        !normalizedSearch ||
-        item.name?.toLowerCase().includes(normalizedSearch) ||
-        item.sku?.toLowerCase().includes(normalizedSearch) ||
-        item.category?.toLowerCase().includes(normalizedSearch);
+  const safeTotalPages = Math.max(totalPages, 1);
+  const currentPage = Math.min(pageIndex + 1, safeTotalPages);
+  const canPrev = currentPage > 1;
+  const canNext = totalCount > 0 && currentPage < safeTotalPages;
+  const startRow =
+    totalCount === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endRow =
+    totalCount === 0
+      ? 0
+      : Math.min(startRow + rows.length - 1, totalCount);
+  const displayPage = totalCount === 0 ? 1 : currentPage;
 
-      const matchesCategory =
-        appliedFilters.category === "all" ||
-        item.category === appliedFilters.category;
+  const categorySelectOptions = useMemo(() => {
+    const base = availableCategories
+      .filter(Boolean)
+      .map((category) => category.toString())
+      .sort((a, b) => a.localeCompare(b));
 
-      const matchesPrice = (() => {
-        const min = appliedFilters.priceMin
-          ? Number(appliedFilters.priceMin)
-          : undefined;
-        const max = appliedFilters.priceMax
-          ? Number(appliedFilters.priceMax)
-          : undefined;
-        if (min !== undefined && item.price < min) return false;
-        if (max !== undefined && item.price > max) return false;
-        return true;
-      })();
-
-      const matchesDate = (() => {
-        const itemDate = item.lastUpdated
-          ? new Date(item.lastUpdated)
-          : item.lastRestocked
-          ? new Date(item.lastRestocked)
-          : null;
-        if (!itemDate || Number.isNaN(itemDate.getTime())) return true;
-
-        if (appliedFilters.dateFrom) {
-          const from = new Date(appliedFilters.dateFrom);
-          if (!Number.isNaN(from.getTime()) && itemDate < from) return false;
-        }
-        if (appliedFilters.dateTo) {
-          const to = new Date(appliedFilters.dateTo);
-          if (!Number.isNaN(to.getTime())) {
-            to.setHours(23, 59, 59, 999);
-            if (itemDate > to) return false;
-          }
-        }
-        return true;
-      })();
-
-      return matchesSearch && matchesCategory && matchesPrice && matchesDate;
-    });
-
-    const compare = (a: Item, b: Item) => {
-      const key = sort as keyof Item;
-      const getValue = (item: Item) => {
-        switch (key) {
-          case "price":
-          case "quantity":
-          case "discount":
-            return Number(item[key] ?? 0);
-          case "lastUpdated":
-          case "lastRestocked":
-            return item[key] ? new Date(item[key]!).getTime() : 0;
-          default:
-            return (item[key] ?? "").toString().toLowerCase();
-        }
-      };
-
-      const aVal = getValue(a);
-      const bVal = getValue(b);
-      if (aVal === bVal) return 0;
-      if (aVal === undefined || aVal === null) return 1;
-      if (bVal === undefined || bVal === null) return -1;
-      if (typeof aVal === "number" && typeof bVal === "number") {
-        return aVal - bVal;
-      }
-      return aVal > bVal ? 1 : -1;
-    };
-
-    const sorted = [...filtered].sort(compare);
-    if (order === "desc") sorted.reverse();
-
-    const total = sorted.length;
-    setTotalCount(total);
-
-    const nextTotalPages = Math.max(1, Math.ceil(total / pageSize));
-    setTotalPages(nextTotalPages);
-
-    let safePage = pageIndex;
-    if (safePage > nextTotalPages) {
-      safePage = nextTotalPages;
-      setPageIndex(nextTotalPages);
+    if (
+      appliedFilters.category &&
+      appliedFilters.category !== "all" &&
+      !base.includes(appliedFilters.category)
+    ) {
+      base.push(appliedFilters.category);
+      base.sort((a, b) => a.localeCompare(b));
     }
 
-    const start = (safePage - 1) * pageSize;
-    const paginated = sorted.slice(start, start + pageSize);
-    setData(paginated);
-  }, [allItems, appliedFilters, pageIndex, pageSize, sort, order]);
-
-  const canPrev = pageIndex > 1;
-  const canNext = pageIndex < totalPages;
-  const startRow = totalCount === 0 ? 0 : (pageIndex - 1) * pageSize + 1;
-  const endRow =
-    totalCount === 0 ? 0 : Math.min(pageIndex * pageSize, totalCount);
+    return ["all", ...base];
+  }, [availableCategories, appliedFilters.category]);
 
   const tableColumns = useMemo(
     () => [
@@ -383,7 +360,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
   );
 
   const table = useReactTable({
-    data,
+    data: rows,
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -402,7 +379,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     return <p className="adminInventory__error">{error}</p>;
   }
 
-  if (!data.length) {
+  if (!rows.length && totalCount === 0) {
     return <p className="adminInventory__empty">No inventory items found.</p>;
   }
 
@@ -640,7 +617,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
               Prev
             </button>
             <span className="adminInventory__pageStatus">
-              Page {pageIndex} of {Math.max(totalPages, 1)}
+              Page {displayPage} of {Math.max(totalPages, 1)}
             </span>
             <button
               type="button"
