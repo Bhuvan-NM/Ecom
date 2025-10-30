@@ -82,14 +82,15 @@ const InventoryTable: React.FC = () => {
 
   return (
     <div className="adminInventory__tableWrapper">
-      {/* Search Bar */}
-      <input
-        type="text"
-        placeholder="Search items..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="border p-2 rounded mb-4 w-full"
-      />
+      <div className="adminInventory__controls">
+        <input
+          type="text"
+          placeholder="Search items..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="adminInventory__search"
+        />
+      </div>
 
       {/* Table */}
       <table className="adminInventory__table">
