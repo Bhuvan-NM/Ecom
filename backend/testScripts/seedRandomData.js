@@ -4,11 +4,11 @@ import { Item, Sale } from "../models/InventoryItem.js";
 
 dotenv.config({ path: "../.env" });
 
-const ITEM_COUNT = Number(process.env.SEED_ITEM_COUNT ?? 200);
-const SALE_COUNT = Number(process.env.SEED_SALE_COUNT ?? 6000);
+const ITEM_COUNT = Number(process.env.SEED_ITEM_COUNT ?? 2000);
+const SALE_COUNT = Number(process.env.SEED_SALE_COUNT ?? 60000);
 
 const ITEM_SKU_PREFIX = "SIM-";
-const DATE_RANGE_YEARS = 4;
+const DATE_RANGE_YEARS = 10;
 
 const categories = [
   "Electronics",

@@ -16,6 +16,7 @@ router.get("/inventory", async (req, res) => {
       priceMax,
       dateFrom,
       dateTo,
+      stockLevel,
     } = req.query;
 
     const query = {};
@@ -42,6 +43,20 @@ router.get("/inventory", async (req, res) => {
     }
     if (Object.keys(priceFilters).length) {
       query.price = priceFilters;
+    }
+
+    if (stockLevel) {
+      const levelKey = String(stockLevel).toLowerCase();
+      const lowThreshold = 100;
+      const mediumThreshold = 200;
+
+      if (levelKey === "low") {
+        query.quantity = { $lt: lowThreshold };
+      } else if (levelKey === "medium") {
+        query.quantity = { $gte: lowThreshold, $lte: mediumThreshold };
+      } else if (levelKey === "high") {
+        query.quantity = { $gt: mediumThreshold };
+      }
     }
 
     const dateFilters = {};

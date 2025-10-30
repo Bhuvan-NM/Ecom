@@ -15,6 +15,7 @@ import {
 } from "@tanstack/react-table";
 import api from "../../lib/api";
 import AtomLoading from "../../assets/loading/AtomLodingIndicator";
+import FilterModalBtn from "../../assets/buttons/filterModalBtn";
 
 type Item = {
   _id: string;
@@ -43,6 +44,7 @@ const MEDIUM_STOCK_THRESHOLD = 200;
 type FilterState = {
   search: string;
   category: string;
+  stockLevel: "all" | "low" | "medium" | "high";
   priceMin: string;
   priceMax: string;
   dateFrom: string;
@@ -52,6 +54,7 @@ type FilterState = {
 const filterDefaults: FilterState = {
   search: "",
   category: "all",
+  stockLevel: "all",
   priceMin: "",
   priceMax: "",
   dateFrom: "",
@@ -109,24 +112,32 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [pageSize, setPageSize] = useState(10);
   const [pageIndex, setPageIndex] = useState(0);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
+  useEffect(() => {
+    if (filtersOpen) {
+      setFilterDraft(appliedFilters);
+    }
+  }, [filtersOpen, appliedFilters]);
 
   const fetchInventory = useCallback(async () => {
     setLoading(true);
     try {
       setError(null);
 
-      const params: Record<string, string | number> = {
-        page: pageIndex + 1,
-        limit: pageSize,
-        sort,
-        order,
-      };
+  const params: Record<string, string | number> = {
+    page: pageIndex + 1,
+    limit: pageSize,
+    sort,
+    order,
+  };
 
-      const { search, category, priceMin, priceMax, dateFrom, dateTo } =
+      const { search, category, stockLevel, priceMin, priceMax, dateFrom, dateTo } =
         appliedFilters;
 
       if (search) params.search = search;
       if (category && category !== "all") params.category = category;
+      if (stockLevel && stockLevel !== "all") params.stockLevel = stockLevel;
       if (priceMin) params.priceMin = priceMin;
       if (priceMax) params.priceMax = priceMax;
       if (dateFrom) params.dateFrom = dateFrom;
@@ -195,6 +206,11 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     setFilterDraft((prev) => ({ ...prev, category: value }));
   };
 
+  const handleStockLevelChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const { value } = event.target;
+    setFilterDraft((prev) => ({ ...prev, stockLevel: value as FilterState["stockLevel"] }));
+  };
+
   const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFilterDraft((prev) => ({ ...prev, [name]: value }));
@@ -210,6 +226,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     setFilterDraft(defaults);
     setAppliedFilters(defaults);
     setPageIndex(0);
+    setFiltersOpen(false);
   };
 
   const handlePageSizeChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -236,6 +253,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
 
   const filtersActive =
     appliedFilters.category !== "all" ||
+    appliedFilters.stockLevel !== "all" ||
     appliedFilters.priceMin !== "" ||
     appliedFilters.priceMax !== "" ||
     appliedFilters.dateFrom !== "" ||
@@ -245,6 +263,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
   const hasPendingChanges =
     normalizedDraft.search !== appliedFilters.search ||
     normalizedDraft.category !== appliedFilters.category ||
+    normalizedDraft.stockLevel !== appliedFilters.stockLevel ||
     normalizedDraft.priceMin !== appliedFilters.priceMin ||
     normalizedDraft.priceMax !== appliedFilters.priceMax ||
     normalizedDraft.dateFrom !== appliedFilters.dateFrom ||
@@ -256,14 +275,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     setFilterDraft(nextFilters);
     setAppliedFilters(nextFilters);
     setPageIndex(0);
-  };
-
-  const handleFilterButtonClick = () => {
-    if (hasPendingChanges) {
-      handleApplyFilters();
-    } else if (filtersActive) {
-      clearFilters();
-    }
+    setFiltersOpen(false);
   };
 
   const safeTotalPages = Math.max(totalPages, 1);
@@ -409,173 +421,209 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
             }}
             className="adminInventory__search"
           />
-        </div>
-
-        <div className="adminInventory__filters">
-          <div className="adminInventory__filter adminInventory__filter--category">
-            <label htmlFor="inventory-filter-category">Category</label>
-            <select
-              id="inventory-filter-category"
-              value={filterDraft.category}
-              onChange={handleCategoryChange}
-              className="adminInventory__categorySelect"
-            >
-              {categorySelectOptions.map((option) => (
-                <option
-                  key={option}
-                  value={option}
-                >
-                  {option === "all" ? "All categories" : option}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="adminInventory__filterGroup">
-            <label>Price Range ($)</label>
-            <div className="adminInventory__filterInputs">
-              <label
-                htmlFor="inventory-price-min"
-                className="sr-only"
-              >
-                Minimum price
-              </label>
-              <input
-                type="number"
-                name="priceMin"
-                min="0"
-                placeholder="Min"
-                id="inventory-price-min"
-                value={filterDraft.priceMin}
-                onChange={handlePriceChange}
-              />
-              <span aria-hidden="true">to</span>
-              <label
-                htmlFor="inventory-price-max"
-                className="sr-only"
-              >
-                Maximum price
-              </label>
-              <input
-                type="number"
-                name="priceMax"
-                min="0"
-                placeholder="Max"
-                id="inventory-price-max"
-                value={filterDraft.priceMax}
-                onChange={handlePriceChange}
-              />
-            </div>
-          </div>
-
-          <div className="adminInventory__filterGroup">
-            <label>Date Range</label>
-            <div className="adminInventory__filterInputs">
-              <label
-                htmlFor="inventory-date-from"
-                className="sr-only"
-              >
-                Start date
-              </label>
-              <input
-                type="date"
-                name="dateFrom"
-                id="inventory-date-from"
-                value={filterDraft.dateFrom}
-                onChange={handleDateChange}
-              />
-              <span aria-hidden="true">to</span>
-              <label
-                htmlFor="inventory-date-to"
-                className="sr-only"
-              >
-                End date
-              </label>
-              <input
-                type="date"
-                name="dateTo"
-                id="inventory-date-to"
-                value={filterDraft.dateTo}
-                onChange={handleDateChange}
-              />
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className="adminInventory__filterReset"
-            onClick={handleFilterButtonClick}
-            disabled={!filtersActive && !hasPendingChanges}
+          <FilterModalBtn
+            isOpen={filtersOpen}
+            onToggle={() => setFiltersOpen((prev) => !prev)}
+            onClose={() => {
+              setFiltersOpen(false);
+              setFilterDraft(appliedFilters);
+            }}
+            title="Inventory Filters"
+            confirmLabel={hasPendingChanges ? "Apply" : "Close"}
+            confirmDisabled={false}
+            onConfirm={hasPendingChanges ? handleApplyFilters : () => setFiltersOpen(false)}
+            className={filtersActive ? "filterModalBtn__trigger--active" : undefined}
           >
-            {hasPendingChanges
-              ? "Apply filters"
-              : filtersActive
-              ? "Clear filters"
-              : "Apply filters"}
-          </button>
+            <div className="adminInventory__filtersModal">
+              <div className="adminInventory__filter adminInventory__filter--category">
+                <label htmlFor="inventory-filter-category">Category</label>
+                <select
+                  id="inventory-filter-category"
+                  value={filterDraft.category}
+                  onChange={handleCategoryChange}
+                  className="adminInventory__categorySelect"
+                >
+                  {categorySelectOptions.map((option) => (
+                    <option
+                      key={option}
+                      value={option}
+                    >
+                      {option === "all" ? "All categories" : option}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="adminInventory__filter adminInventory__filter--stock">
+                <label htmlFor="inventory-filter-stock">Stock Level</label>
+                <select
+                  id="inventory-filter-stock"
+                  value={filterDraft.stockLevel}
+                  onChange={handleStockLevelChange}
+                  className="adminInventory__categorySelect"
+                >
+                  <option value="all">All stock levels</option>
+                  <option value="low">Low (&lt; 100)</option>
+                  <option value="medium">Medium (100-200)</option>
+                  <option value="high">High (&gt; 200)</option>
+                </select>
+              </div>
+
+              <div className="adminInventory__filterGroup">
+                <label>Price Range ($)</label>
+                <div className="adminInventory__filterInputs">
+                  <label
+                    htmlFor="inventory-price-min"
+                    className="sr-only"
+                  >
+                    Minimum price
+                  </label>
+                  <input
+                    type="number"
+                    name="priceMin"
+                    min="0"
+                    placeholder="Min"
+                    id="inventory-price-min"
+                    value={filterDraft.priceMin}
+                    onChange={handlePriceChange}
+                  />
+                  <span aria-hidden="true">to</span>
+                  <label
+                    htmlFor="inventory-price-max"
+                    className="sr-only"
+                  >
+                    Maximum price
+                  </label>
+                  <input
+                    type="number"
+                    name="priceMax"
+                    min="0"
+                    placeholder="Max"
+                    id="inventory-price-max"
+                    value={filterDraft.priceMax}
+                    onChange={handlePriceChange}
+                  />
+                </div>
+              </div>
+
+              <div className="adminInventory__filterGroup">
+                <label>Date Range</label>
+                <div className="adminInventory__filterInputs">
+                  <label
+                    htmlFor="inventory-date-from"
+                    className="sr-only"
+                  >
+                    Start date
+                  </label>
+                  <input
+                    type="date"
+                    name="dateFrom"
+                    id="inventory-date-from"
+                    value={filterDraft.dateFrom}
+                    onChange={handleDateChange}
+                  />
+                  <span aria-hidden="true">to</span>
+                  <label
+                    htmlFor="inventory-date-to"
+                    className="sr-only"
+                  >
+                    End date
+                  </label>
+                  <input
+                    type="date"
+                    name="dateTo"
+                    id="inventory-date-to"
+                    value={filterDraft.dateTo}
+                    onChange={handleDateChange}
+                  />
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="adminInventory__filterReset"
+                onClick={clearFilters}
+                disabled={!filtersActive && !hasPendingChanges}
+              >
+                {filtersActive || hasPendingChanges ? "Clear filters" : "No filters applied"}
+              </button>
+            </div>
+          </FilterModalBtn>
         </div>
       </div>
 
-      <table className="adminInventory__table">
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  onClick={() => handleSortClick(header.column.id)}
-                  className="adminInventory__tableHeader"
-                >
-                  <span className="adminInventory__headerContent">
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                    {sort === header.column.id && (
-                      <span className="adminInventory__sortIndicator">
-                        {order === "asc" ? "▲" : "▼"}
-                      </span>
-                    )}
-                  </span>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr
-              key={row.id}
-              className={`adminInventory__tableRow ${
-                onRowClick ? "adminInventory__tableRow--interactive" : ""
-              }`}
-              onClick={() => onRowClick?.(row.original)}
-              tabIndex={onRowClick ? 0 : undefined}
-              aria-label={
-                onRowClick
-                  ? `View item ${row.original.name ?? row.original.sku}`
-                  : undefined
-              }
-              onKeyDown={(event) => {
-                if (!onRowClick) return;
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  onRowClick(row.original);
+      <div className="adminInventory__tableScroll">
+        <table className="adminInventory__table">
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    onClick={() => handleSortClick(header.column.id)}
+                    className="adminInventory__tableHeader"
+                  >
+                    <span className="adminInventory__headerContent">
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      {sort === header.column.id && (
+                        <span className="adminInventory__sortIndicator">
+                          {order === "asc" ? "▲" : "▼"}
+                        </span>
+                      )}
+                    </span>
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr
+                key={row.id}
+                className={`adminInventory__tableRow ${
+                  onRowClick ? "adminInventory__tableRow--interactive" : ""
+                }`}
+                onClick={() => onRowClick?.(row.original)}
+                tabIndex={onRowClick ? 0 : undefined}
+                aria-label={
+                  onRowClick
+                    ? `View item ${row.original.name ?? row.original.sku}`
+                    : undefined
                 }
-              }}
-            >
-              {row.getVisibleCells().map((cell) => (
+                onKeyDown={(event) => {
+                  if (!onRowClick) return;
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onRowClick(row.original);
+                  }
+                }}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <td
+                    key={cell.id}
+                    className="p-3 border-b"
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+            {!table.getRowModel().rows.length && (
+              <tr>
                 <td
-                  key={cell.id}
-                  className="p-3 border-b"
+                  colSpan={table.getVisibleFlatColumns().length}
+                  className="adminInventory__emptyRow"
                 >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  No inventory items found.
                 </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       <div className="adminInventory__tableFooter">
         <div className="adminInventory__paginationInfo">
