@@ -5,16 +5,24 @@ const normalize = (value?: string) =>
 
 const isBrowser = typeof window !== "undefined";
 const envBaseUrl = normalize(import.meta.env.VITE_API_BASE_URL);
+const envDevBaseUrl = normalize(import.meta.env.VITE_API_BASE_URL_DEV);
 const isDevelopment = import.meta.env.DEV;
 
-let baseURL = envBaseUrl;
+let baseURL: string | undefined;
 
-if (!baseURL) {
-  if (isDevelopment) {
-    baseURL = "http://localhost:1337";
-  } else if (isBrowser) {
-    baseURL = normalize(window.location.origin);
+if (isDevelopment) {
+  const localhostFallback = "http://localhost:1337";
+  baseURL =
+    envDevBaseUrl ??
+    (envBaseUrl && !envBaseUrl.includes("onrender.com")
+      ? envBaseUrl
+      : localhostFallback);
+
+  if (isBrowser && window.location.hostname === "localhost") {
+    baseURL = envDevBaseUrl ?? localhostFallback;
   }
+} else {
+  baseURL = envBaseUrl ?? (isBrowser ? normalize(window.location.origin) : undefined);
 }
 
 const api = axios.create({
