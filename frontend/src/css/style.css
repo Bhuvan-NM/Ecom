@@ -533,6 +533,80 @@ body {
     height: 4.2rem;
   }
 }
+.adminInventory {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 2rem;
+  box-shadow: 0 2.5rem 4rem rgba(0, 0, 0, 0.08);
+}
+.adminInventory__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.adminInventory__title {
+  font-size: clamp(2rem, 1.8vw + 1rem, 2.6rem);
+  text-transform: uppercase;
+  letter-spacing: 0.25rem;
+  color: #003459;
+}
+.adminInventory__subtitle {
+  font-size: 1.4rem;
+  color: rgba(0, 52, 89, 0.7);
+}
+.adminInventory__error {
+  padding: 1.5rem 2rem;
+  border-radius: 1.5rem;
+  background: rgba(0, 167, 225, 0.15);
+  color: #003459;
+  font-size: 1.4rem;
+}
+.adminInventory__empty {
+  font-size: 1.4rem;
+  color: rgba(0, 52, 89, 0.6);
+}
+.adminInventory__tableWrapper {
+  overflow-x: auto;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(0, 52, 89, 0.08);
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: inset 0 0 0 1px rgba(0, 52, 89, 0.04);
+}
+.adminInventory__table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 60rem;
+}
+.adminInventory__table th,
+.adminInventory__table td {
+  padding: 1.2rem 1.5rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 52, 89, 0.08);
+}
+.adminInventory__table th {
+  font-size: 1.3rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15rem;
+  color: rgba(0, 52, 89, 0.8);
+  cursor: pointer;
+  user-select: none;
+}
+.adminInventory__table th:hover {
+  color: #003459;
+  background: rgba(0, 167, 225, 0.1);
+}
+.adminInventory__table tr:hover td {
+  background: rgba(0, 167, 225, 0.08);
+}
+.adminInventory__table td {
+  font-size: 1.3rem;
+  color: #003459;
+}
+
 .darkveil-canvas {
   width: 100%;
   height: 100%;

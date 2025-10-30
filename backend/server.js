@@ -7,6 +7,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import reportRoutes from "./routes/reportRoute.js";
 import authRoutes from "./routes/authRoute.js";
+import inventoryRoutes from "./routes/inventoryRoute.js";
 import "./models/InventoryItem.js";
 
 dotenv.config();
@@ -47,6 +48,7 @@ app.use(cookieParser());
 // ----- Routes -----
 app.use("/auth", authRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api", inventoryRoutes);
 
 // ----- Serve frontend (AFTER API routes) -----
 const __filename = fileURLToPath(import.meta.url);

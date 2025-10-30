@@ -15,7 +15,7 @@ if (!resolvedBaseUrl || (!import.meta.env.DEV && isLocalEnvUrl)) {
   }
 }
 
-if (!resolvedBaseUrl && import.meta.env.DEV) {
+if (import.meta.env.DEV && isBrowser && window.location.hostname === "localhost") {
   resolvedBaseUrl = "http://localhost:1337";
 }
 
