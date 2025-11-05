@@ -9,13 +9,12 @@ import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
-  getPaginationRowModel,
   flexRender,
   createColumnHelper,
 } from "@tanstack/react-table";
 import api from "../../lib/api";
 import AtomLoading from "../../assets/loading/AtomLodingIndicator";
-import FilterModalBtn from "../../assets/buttons/filterModalBtn";
+import FilterModalBtn from "../../assets/buttons/FilterModalBtn";
 
 type Item = {
   _id: string;
@@ -66,6 +65,7 @@ const createDefaultFilters = (): FilterState => ({ ...filterDefaults });
 const normalizeFilters = (filters: FilterState): FilterState => ({
   search: filters.search.trim(),
   category: filters.category || "all",
+  stockLevel: filters.stockLevel || "all",
   priceMin: filters.priceMin.trim(),
   priceMax: filters.priceMax.trim(),
   dateFrom: filters.dateFrom,
@@ -376,7 +376,6 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
   });
 
   if (loading) {
@@ -389,10 +388,6 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
 
   if (error) {
     return <p className="adminInventory__error">{error}</p>;
-  }
-
-  if (!rows.length && totalCount === 0) {
-    return <p className="adminInventory__empty">No inventory items found.</p>;
   }
 
   return (

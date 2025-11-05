@@ -53,9 +53,9 @@ router.get("/inventory", async (req, res) => {
       if (levelKey === "low") {
         query.quantity = { $lt: lowThreshold };
       } else if (levelKey === "medium") {
-        query.quantity = { $gte: lowThreshold, $lte: mediumThreshold };
+        query.quantity = { $gte: lowThreshold, $lt: mediumThreshold };
       } else if (levelKey === "high") {
-        query.quantity = { $gt: mediumThreshold };
+        query.quantity = { $gte: mediumThreshold };
       }
     }
 
