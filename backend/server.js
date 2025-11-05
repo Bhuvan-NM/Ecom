@@ -5,9 +5,10 @@ import path from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import reportRoutes from "./routes/reportRoute.js";
+import salesReportRoutes from "./routes/SalesReportRoute.js";
 import authRoutes from "./routes/authRoute.js";
 import inventoryRoutes from "./routes/inventoryRoute.js";
+import { getUserStatistics, generateUserReport } from "./services/UserReportGen.js";
 import "./models/InventoryItem.js";
 
 dotenv.config();
@@ -17,6 +18,8 @@ const app = express();
 // ----- CORS -----
 const defaultOrigins = [
   "http://localhost:5173",
+  "http://localhost:4173",
+  "http://localhost:1337",
   process.env.FRONTEND_URL,
   process.env.RENDER_EXTERNAL_URL,
   "https://ecom-t5ly.onrender.com", // your frontend
@@ -47,8 +50,29 @@ app.use(cookieParser());
 
 // ----- Routes -----
 app.use("/auth", authRoutes);
-app.use("/api/reports", reportRoutes);
+app.use("/api/reports", salesReportRoutes);
 app.use("/api", inventoryRoutes);
+
+app.get("/api/reports/user-statistics", async (req, res) => {
+  try {
+    const stats = await getUserStatistics();
+    console.log("📊 Responding with user statistics:", stats);
+    res.json(stats);
+  } catch (err) {
+    console.error("❌ Error fetching user statistics:", err);
+    res.status(500).json({ error: "Failed to fetch user statistics" });
+  }
+});
+
+app.get("/api/reports/user-report", async (req, res) => {
+  try {
+    const report = await generateUserReport();
+    res.json(report);
+  } catch (err) {
+    console.error("❌ Error generating user report:", err);
+    res.status(500).json({ error: "Failed to generate user report" });
+  }
+});
 
 // ----- Serve frontend (AFTER API routes) -----
 const __filename = fileURLToPath(import.meta.url);

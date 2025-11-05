@@ -7,9 +7,16 @@ import Orders from "../subPages/adminPages/Orders";
 import Users from "../subPages/adminPages/Users";
 import Settings from "../subPages/adminPages/Settings";
 
+const STORAGE_KEY = "adminPortal.activeSection";
+const MENU_ITEMS = ["Dashboard", "Inventory", "Orders", "Users", "Settings"] as const;
+
 const Admin: React.FC = () => {
   const [statusMessage, setStatusMessage] = useState("Loading admin tools...");
-  const [activeSection, setActiveSection] = useState("Dashboard");
+  const [activeSection, setActiveSection] = useState(() => {
+    if (typeof window === "undefined") return "Dashboard";
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    return stored ?? "Dashboard";
+  });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -35,7 +42,14 @@ const Admin: React.FC = () => {
     fetchAdminStatus();
   }, []);
 
-  const menuItems = ["Dashboard", "Inventory", "Orders", "Users", "Settings"];
+  useEffect(() => {
+    if (!MENU_ITEMS.includes(activeSection as typeof MENU_ITEMS[number])) {
+      setActiveSection("Dashboard");
+      try {
+        window.localStorage.setItem(STORAGE_KEY, "Dashboard");
+      } catch {}
+    }
+  }, [activeSection]);
 
   // Function to render content based on activeSection
   const renderContent = () => {
@@ -55,8 +69,13 @@ const Admin: React.FC = () => {
     }
   };
 
-  const handleSelect = (item: string) => {
+  const handleSelect = (item: typeof MENU_ITEMS[number]) => {
     setActiveSection(item);
+    try {
+      window.localStorage.setItem(STORAGE_KEY, item);
+    } catch (storageError) {
+      console.warn("Unable to persist admin section", storageError);
+    }
     setIsMenuOpen(false);
   };
 
@@ -94,7 +113,7 @@ const Admin: React.FC = () => {
             <div className="adminPortalFloatingMenu__bubble">
               <p className="adminPortalFloatingMenu__status">{statusMessage}</p>
               <ul className="adminPortalFloatingMenu__list">
-                {menuItems.map((item) => (
+                {MENU_ITEMS.map((item) => (
                   <li key={item}>
                     <button
                       type="button"

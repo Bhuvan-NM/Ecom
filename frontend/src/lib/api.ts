@@ -10,8 +10,9 @@ const isDevelopment = import.meta.env.DEV;
 
 let baseURL: string | undefined;
 
+const localhostFallback = "http://localhost:1337";
+
 if (isDevelopment) {
-  const localhostFallback = "http://localhost:1337";
   baseURL =
     envDevBaseUrl ??
     (envBaseUrl && !envBaseUrl.includes("onrender.com")
@@ -23,6 +24,14 @@ if (isDevelopment) {
   }
 } else {
   baseURL = envBaseUrl ?? (isBrowser ? normalize(window.location.origin) : undefined);
+
+  if (
+    isBrowser &&
+    window.location.hostname === "localhost" &&
+    (!baseURL || baseURL.startsWith(normalize(window.location.origin)))
+  ) {
+    baseURL = envDevBaseUrl ?? envBaseUrl ?? localhostFallback;
+  }
 }
 
 const api = axios.create({

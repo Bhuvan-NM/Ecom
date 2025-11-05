@@ -1218,6 +1218,24 @@ body {
   gap: 1.4rem;
 }
 
+.users-DataCardContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 2rem;
+  gap: 20px;
+}
+
+.users-DataCard {
+  flex: 1;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 2.4rem;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .adminInventory_modal {
   position: fixed;
   inset: 0;
